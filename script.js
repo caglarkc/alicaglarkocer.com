@@ -66,7 +66,8 @@ if (projectStage) {
   projectStage.querySelector(".carousel-next").addEventListener("click", () => moveProjects(1));
 
   projectCards.forEach((card, index) => {
-    card.addEventListener("click", () => {
+    card.addEventListener("click", (event) => {
+      if (event.target.closest("a")) return;
       if (!didDrag && index !== activeProject) {
         activeProject = index;
         renderProjects();
@@ -80,7 +81,7 @@ if (projectStage) {
   });
 
   projectStage.addEventListener("pointerdown", (event) => {
-    if (event.target.closest("button")) return;
+    if (event.target.closest("button, a")) return;
     dragStart = event.clientX;
     didDrag = false;
     projectStage.classList.add("is-dragging");

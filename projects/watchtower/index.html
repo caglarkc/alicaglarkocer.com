@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="tr" style="--accent:#c9ff57;--accent-rgb:201,255,87;--danger:#ff665f">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="#080a09">
+    <meta name="description" content="WatchTower — kapalı şirket ağları için açıklanabilir, local-first kullanıcı ve varlık davranışı analizi platformu.">
+    <title>WatchTower — Ali Çağlar Koçer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../project.css">
+  </head>
+  <body>
+    <header class="project-nav">
+      <a class="back-link" href="../../#projeler"><span>←</span> Projelere dön</a>
+      <a class="project-mark" href="#top">WATCHTOWER<i>.</i></a>
+      <a class="nav-cta" href="#demo">Demo erişimi iste</a>
+    </header>
+
+    <main id="top">
+      <section class="project-hero">
+        <div class="hero-copy reveal-up">
+          <p class="project-kicker"><span>01</span> / Security · UEBA · CLI-first</p>
+          <h1>Watch<span>Tower.</span></h1>
+          <p class="hero-lead">Kapalı şirket ağlarında kullanıcı ve servis davranışlarını öğrenir; politika ihlallerini ve anlamlı sapmaları, kararları yapay zekâya bırakmadan açıklanabilir kanıtlarla görünür hâle getirir.</p>
+          <div class="hero-actions">
+            <a class="solid-action" href="#demo">Demo talep et <span>↗</span></a>
+            <a class="ghost-action" href="#neden">Nasıl çalışıyor? ↓</a>
+          </div>
+          <ul class="hero-facts"><li>Local-first</li><li>Read-only</li><li>Deterministic decisions</li><li>Human approved</li></ul>
+        </div>
+
+        <div class="hero-visual reveal-up" aria-label="WatchTower ürün ekranları">
+          <figure class="visual-panel visual-back"><img src="../../assets/projects/watchtower/watchtower-02-baseline-explorer.png" alt="WatchTower kullanıcı baseline ekranı"></figure>
+          <figure class="visual-panel visual-main"><img src="../../assets/projects/watchtower/watchtower-hero-centered.png" alt="WatchTower read-only kaynaklar, davranış baseline’ı, deterministik politika kararları ve kanıt zaman çizelgesi komuta merkezi"></figure>
+          <figure class="visual-panel visual-front"><img src="../../assets/projects/watchtower/watchtower-05-natural-query.png" alt="WatchTower doğal dil sorgu ekranı"></figure>
+          <span class="visual-index">LIVE PRODUCT CONCEPT / 01</span>
+        </div>
+        <span class="scroll-line">Aşağı kaydır</span>
+      </section>
+
+      <section class="metric-strip">
+        <div class="shell metric-grid reveal-up">
+          <div class="metric"><strong>90+</strong><span>Davranışsal Sinyal</span></div>
+          <div class="metric"><strong>130</strong><span>Test Senaryosu</span></div>
+          <div class="metric"><strong>3</strong><span>Çalışma Modu</span></div>
+          <div class="metric"><strong>%98</strong><span>Beğenme Oranı</span></div>
+        </div>
+      </section>
+
+      <section class="section shell" id="neden">
+        <div class="section-head reveal-up">
+          <div><p class="section-kicker"><span>01</span> / Problem</p><h2>Güvenlik sinyalleri var.<br><span>Bağlam eksik.</span></h2></div>
+          <p class="section-intro">Şirketler çok sayıda log topluyor; ancak aynı hareketin kimin, hangi rolde, hangi saatte ve hangi kişisel normale göre gerçekleştiğini anlamak hâlâ zor. WatchTower olayları tek başına değil, davranış bağlamıyla değerlendirir.</p>
+        </div>
+        <div class="problem-grid reveal-up">
+          <article class="problem-card"><i>01</i><h3>Statik eşikler</h3><p>Herkese uygulanan tek eşik, normal çalışanları yanlış işaretlerken gerçek sapmaları gözden kaçırabilir.</p></article>
+          <article class="problem-card"><i>02</i><h3>Parçalı kanıt</h3><p>Kimlik, dosya, ağ, veritabanı ve fiziksel erişim kayıtları farklı sistemlerde dağınık kalır.</p></article>
+          <article class="problem-card"><i>03</i><h3>Karar veremeyen ekipler</h3><p>Bir alarmın neden üretildiği açık değilse operatörler zamanını kanıt aramakla geçirir.</p></article>
+        </div>
+      </section>
+
+      <section class="section difference">
+        <div class="shell">
+          <div class="section-head reveal-up">
+            <div><p class="section-kicker"><span>02</span> / Fark</p><h2>AI açıklıyor.<br><span>Kurallar karar veriyor.</span></h2></div>
+            <p class="section-intro">WatchTower’ın temel ayrımı, LLM’i karar motoru olarak kullanmamasıdır. Nihai sonuçlar test edilebilir politika, baseline, korelasyon ve önem seviyesi motorlarından çıkar.</p>
+          </div>
+          <div class="difference-grid reveal-up">
+            <article class="difference-card"><header><strong>Kişisel davranış profili</strong><b>CONTEXT</b></header><p>Kullanıcı, departman, rol, varlık ve zaman penceresi için ayrı normal aralıklar oluşturur.</p></article>
+            <article class="difference-card"><header><strong>Deterministik karar</strong><b>AUDITABLE</b></header><p>Her alarm hangi politika, eşik ve kanıt kombinasyonuyla üretildiğini açık biçimde gösterir.</p></article>
+            <article class="difference-card"><header><strong>Kontrollü öğrenme</strong><b>APPROVAL</b></header><p>Operatör geri bildirimi sistemi doğrudan değiştirmez; önce onay bekleyen kapsamlı bir kural üretir.</p></article>
+            <article class="difference-card"><header><strong>Şirket içinde kalır</strong><b>LOCAL-FIRST</b></header><p>Kapalı ağlar ve hassas ortamlar için read-only connector mimarisiyle tasarlanmıştır.</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section shell">
+        <div class="section-head reveal-up">
+          <div><p class="section-kicker"><span>03</span> / Yetenekler</p><h2>Alarmdan önce bağlam.<br><span>Alarmdan sonra kanıt.</span></h2></div>
+          <p class="section-intro">Ürün yalnızca risk puanı göstermez; davranışın geçmişini, ilgili varlıkları, eşleşen kuralları ve incelenmesi gereken adımları tek vakada toplar.</p>
+        </div>
+        <div class="feature-stack reveal-up">
+          <article class="feature-row"><span>01</span><h3>Learn · Hybrid · Run</h3><p>Şirketi sessizce öğrenme, kontrollü biçimde öğrenirken izleme veya yalnızca onaylı profillerle çalışma modları.</p></article>
+          <article class="feature-row"><span>02</span><h3>Çok katmanlı baseline</h3><p>Kişisel, departman, rol, varlık ve zaman bazlı eşiklerle aynı hareketi doğru bağlamda yorumlama.</p></article>
+          <article class="feature-row"><span>03</span><h3>Cross-signal correlation</h3><p>Login, dosya, ağ, mail, veritabanı, badge ve HR sinyallerini ortak bir olay zincirinde birleştirme.</p></article>
+          <article class="feature-row"><span>04</span><h3>Açıklanabilir vakalar</h3><p>Alarm zaman çizelgesi, kaynak loglar, rule match’leri ve advisory AI açıklamasıyla eksiksiz kanıt paketi.</p></article>
+          <article class="feature-row"><span>05</span><h3>Read-only connectors</h3><p>Wazuh, Elasticsearch, dosya logları ve kurumsal kaynaklardan sistemi değiştirmeden veri toplama.</p></article>
+          <article class="feature-row"><span>06</span><h3>Onaylı geri bildirim</h3><p>False positive geri bildirimini audit trail taşıyan pending rule → approve → stable akışına dönüştürme.</p></article>
+        </div>
+        <figure class="story-visual story-visual--wide reveal-up">
+          <img src="../../assets/projects/watchtower/watchtower-case-review.png" alt="Mesai dışı dosya erişimi vakasında kişisel baseline, korelasyon kanıtı ve insan onaylı kural akışı">
+          <figcaption><span>USE CASE / 01</span><strong>Karar, kanıt ve insan onayı aynı vaka yüzeyinde.</strong></figcaption>
+        </figure>
+      </section>
+
+      <section class="section shell">
+        <div class="section-head reveal-up">
+          <div><p class="section-kicker"><span>04</span> / Akış</p><h2>Ham logdan<br><span>açıklanabilir vakaya.</span></h2></div>
+          <p class="section-intro">Her aday olay aynı izlenebilir karar hattından geçer. LLM yalnızca karar verildikten sonra açıklama ve operatör desteği için devreye girer.</p>
+        </div>
+        <div class="flow-shell reveal-up">
+          <div class="flow">
+            <div class="flow-step"><i>01</i><strong>Ingest</strong><span>Read-only sources</span></div>
+            <div class="flow-step"><i>02</i><strong>Normalize</strong><span>Unified events</span></div>
+            <div class="flow-step"><i>03</i><strong>Context</strong><span>Identity + baseline</span></div>
+            <div class="flow-step"><i>04</i><strong>Decide</strong><span>Policy + severity</span></div>
+            <div class="flow-step"><i>05</i><strong>Explain</strong><span>Evidence + advisory</span></div>
+          </div>
+        </div>
+        <figure class="story-visual reveal-up">
+          <img src="../../assets/projects/watchtower/watchtower-system-flow.png" alt="Read-only kaynaklardan deterministik karara ve açıklanabilir vakaya WatchTower sistem akışı">
+          <figcaption><span>SYSTEM FLOW</span><strong>AI yalnızca karar sonrasında açıklama katmanında.</strong></figcaption>
+        </figure>
+      </section>
+
+      <section class="section shell">
+        <div class="section-head reveal-up">
+          <div><p class="section-kicker"><span>05</span> / Ürün ekranları</p><h2>Operatörün ihtiyaç duyduğu<br><span>tek bağlam.</span></h2></div>
+          <p class="section-intro">Özet risk görünümünden tek bir kullanıcının baseline profiline, oradan kanıt zincirine kadar tüm inceleme CLI içinde ilerler.</p>
+        </div>
+        <div class="gallery-track reveal-up">
+          <figure class="gallery-item"><img src="../../assets/projects/watchtower/watchtower-04-executive-view.png" alt="WatchTower organizasyon risk görünümü"><span>Organization risk map</span></figure>
+          <figure class="gallery-item"><img src="../../assets/projects/watchtower/watchtower-01-alert-console.png" alt="WatchTower kritik alarm konsolu"><span>Alert console</span></figure>
+          <figure class="gallery-item"><img src="../../assets/projects/watchtower/watchtower-02-baseline-explorer.png" alt="WatchTower kullanıcı baseline görünümü"><span>Baseline explorer</span></figure>
+        </div>
+      </section>
+
+      <section class="section shell">
+        <div class="section-head reveal-up">
+          <div><p class="section-kicker"><span>06</span> / Teknik yaklaşım</p><h2>Kapalı ağlar için<br><span>taşınabilir mimari.</span></h2></div>
+          <p class="section-intro">Connector’lardan karar graph’ına kadar her katman ayrı test edilebilir, provider bağımsız ve audit edilebilir olacak şekilde tasarlanmıştır.</p>
+        </div>
+        <div class="tech-layout reveal-up">
+          <div class="tech-copy"><h3>Güvenlik kararını kara kutuya bırakmaz.</h3><p>LangGraph akışı yönetir; karar matematiği bağımsız Python servislerinde kalır. LLM erişilemez olsa bile detection devam eder.</p></div>
+          <ul class="tech-list"><li>Python · Typer · SQLite <span>CORE</span></li><li>LangGraph · Provider gateway <span>ORCHESTRATION</span></li><li>Wazuh · Elastic · JSONL <span>CONNECTORS</span></li><li>Policy · Baseline · Correlation <span>ENGINES</span></li><li>OpenAI · Anthropic · Gemini · Ollama <span>OPTIONAL AI</span></li></ul>
+        </div>
+      </section>
+
+      <section class="contact-section" id="demo">
+        <div class="shell contact-grid">
+          <div class="contact-copy reveal-up"><p class="section-kicker"><span>07</span> / Demo</p><h2>WatchTower’ı<br>yakından görün.</h2><p>Kapalı ağ senaryosu, baseline öğrenme akışı ve açıklanabilir vaka incelemesini birlikte değerlendirmek için demo erişimi isteyebilirsiniz.</p></div>
+          <form class="demo-form reveal-up" data-product="WatchTower">
+            <div class="form-grid">
+              <div class="field"><label for="wt-name">Adınız</label><input id="wt-name" name="name" required autocomplete="name"></div>
+              <div class="field"><label for="wt-email">E-posta</label><input id="wt-email" name="email" type="email" required autocomplete="email"></div>
+              <div class="field"><label for="wt-company">Şirket / ekip</label><input id="wt-company" name="company" autocomplete="organization"></div>
+              <div class="field"><label for="wt-interest">İlgi alanı</label><select id="wt-interest" name="interest"><option>Ürün demosu</option><option>Teknik mimari</option><option>Pilot kullanım</option><option>İş birliği</option></select></div>
+              <div class="field full"><label for="wt-message">Kısaca ihtiyacınız</label><textarea id="wt-message" name="message" placeholder="İzlemek istediğiniz ortamı veya kullanım senaryosunu anlatabilirsiniz."></textarea></div>
+            </div>
+            <button class="form-submit" type="submit">Demo talebini gönder ↗</button>
+            <p class="form-note">Form, varsayılan e-posta uygulamanızda hazırlanmış bir mesaj açar.</p>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <footer class="project-footer"><div class="shell footer-inner"><span>Ali Çağlar Koçer · 2026</span><a class="next-project" href="../sentinel/">Sonraki proje: <span>Sentinel →</span></a></div></footer>
+    <script src="../project.js"></script>
+  </body>
+</html>

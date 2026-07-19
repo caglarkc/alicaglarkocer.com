@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="tr" style="--accent:#75e7ff;--accent-rgb:117,231,255;--danger:#9b8cff">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="#080a09">
+    <meta name="description" content="Sentinel — metrik, log ve trace verisini şirket içinde tutan, self-hosted ve AI destekli gözlemlenebilirlik platformu.">
+    <title>Sentinel — Ali Çağlar Koçer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../project.css">
+  </head>
+  <body>
+    <header class="project-nav">
+      <a class="back-link" href="../../#projeler"><span>←</span> Projelere dön</a>
+      <a class="project-mark" href="#top">SENTINEL<i>.</i></a>
+      <a class="nav-cta" href="#demo">Demo erişimi iste</a>
+    </header>
+
+    <main id="top">
+      <section class="project-hero">
+        <div class="hero-copy reveal-up">
+          <p class="project-kicker"><span>02</span> / Observability · AI · CLI-first</p>
+          <h1>Sentinel</h1>
+          <p class="hero-lead">Metrik, log ve trace verisini şirketin kendi ortamında tutar; mühendislerin servis sağlığını anlamasını, olayları tek bağlamda incelemesini ve kanıta dayalı teşhis üretmesini kolaylaştırır.</p>
+          <div class="hero-actions">
+            <a class="solid-action" href="#demo">Demo talep et <span>↗</span></a>
+            <a class="ghost-action" href="#neden">Mimariyi incele ↓</a>
+          </div>
+          <ul class="hero-facts"><li>Self-hosted</li><li>Read-only gateway</li><li>Metrics + logs + traces</li><li>Evidence first</li></ul>
+        </div>
+
+        <div class="hero-visual reveal-up" aria-label="Sentinel ürün ekranları">
+          <figure class="visual-panel visual-back"><img src="../../assets/projects/sentinel/sentinel-02-trace-investigation.png" alt="Sentinel trace inceleme ekranı"></figure>
+          <figure class="visual-panel visual-main"><img src="../../assets/projects/sentinel/sentinel-hero-centered.png" alt="Sentinel servis topolojisi, metrik, log, trace ve kanıta dayalı AI inceleme merkezi"></figure>
+          <figure class="visual-panel visual-front"><img src="../../assets/projects/sentinel/sentinel-03-agent-investigation.png" alt="Sentinel AI destekli olay inceleme ekranı"></figure>
+          <span class="visual-index">SELF-HOSTED OBSERVABILITY / 02</span>
+        </div>
+        <span class="scroll-line">Aşağı kaydır</span>
+      </section>
+
+      <section class="metric-strip">
+        <div class="shell metric-grid reveal-up">
+          <div class="metric"><strong>3</strong><span>Telemetri Katmanı</span></div>
+          <div class="metric"><strong>300+</strong><span>Gözlemleme Senaryosu</span></div>
+          <div class="metric"><strong>2 Dk</strong><span>'da Sisteme Entegre</span></div>
+          <div class="metric"><strong>0</strong><span>Zorunlu Dış Veri Aktarımı</span></div>
+        </div>
+      </section>
+
+      <section class="section shell" id="neden">
+        <div class="section-head reveal-up">
+          <div><p class="section-kicker"><span>01</span> / Problem</p><h2>Veri çok.<br><span>Ortak hikâye yok.</span></h2></div>
+          <p class="section-intro">Bir olay sırasında ekipler metrik paneli, log araması ve trace görünümü arasında dolaşır. Sentinel bu kaynakları taşımadan, tek bir read-only erişim katmanında buluşturur.</p>
+        </div>
+        <div class="problem-grid reveal-up">
+          <article class="problem-card"><i>01</i><h3>Araçlar arası kopukluk</h3><p>Aynı arızanın CPU yükselişi, hata logu ve yavaş trace'i farklı ekranlarda ayrı ayrı kalır.</p></article>
+          <article class="problem-card"><i>02</i><h3>Veri egemenliği</h3><p>Hassas altyapı telemetrisini üçüncü taraf bir servise göndermek her kurum için uygun değildir.</p></article>
+          <article class="problem-card"><i>03</i><h3>Bağlamsız teşhis</h3><p>Genel öneriler, servisin gerçek metrikleri ve dağıtım yapısıyla desteklenmediğinde ekibe zaman kaybettirir.</p></article>
+        </div>
+      </section>
+
+      <section class="section difference">
+        <div class="shell">
+          <div class="section-head reveal-up">
+            <div><p class="section-kicker"><span>02</span> / Fark</p><h2>Telemetri içeride.<br><span>Kanıt tek yerde.</span></h2></div>
+            <p class="section-intro">Sentinel yeni bir gözlem verisi silosu yaratmaz. Mevcut Prometheus, Loki ve Tempo kurulumlarının üzerinde güvenli bir inceleme ve asistan katmanı olarak çalışır.</p>
+          </div>
+          <div class="difference-grid reveal-up">
+            <article class="difference-card"><header><strong>Read-only araç sınırı</strong><b>SAFE</b></header><p>Asistan sorgu üretir ve veri okur; altyapıyı değiştiren komutları gözlem hattından ayırır.</p></article>
+            <article class="difference-card"><header><strong>Üç sinyal, tek inceleme</strong><b>CORRELATED</b></header><p>Metrik anomalisinden ilgili loglara ve trace zincirine aynı olay bağlamıyla ilerler.</p></article>
+            <article class="difference-card"><header><strong>Local-first dağıtım</strong><b>PRIVATE</b></header><p>Docker Compose veya Helm ile şirketin kendi altyapısında çalışacak şekilde tasarlanır.</p></article>
+            <article class="difference-card"><header><strong>Kanıta dayalı asistan</strong><b>GROUNDED</b></header><p>Yanıtını canlı sorgu sonuçlarına, servis topolojisine ve gözlemlenen zaman aralığına dayandırır.</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section shell">
+        <div class="section-head reveal-up">
+          <div><p class="section-kicker"><span>03</span> / Yetenekler</p><h2>Terminalden sor.<br><span>Sistemden kanıt getir.</span></h2></div>
+          <p class="section-intro">Günlük sağlık kontrolünden karmaşık incident incelemesine kadar aynı CLI yüzeyi kullanılır; ayrıntıya ihtiyaç oldukça sinyaller arasında derinleşilir.</p>
+        </div>
+        <div class="feature-stack reveal-up">
+          <article class="feature-row"><span>01</span><h3>Birleşik servis sağlığı</h3><p>Hata oranı, gecikme, kaynak kullanımı ve son durumu tek komutla özetleme.</p></article>
+          <article class="feature-row"><span>02</span><h3>Prometheus · Loki · Tempo</h3><p>Telemetry backend'lerini ayrı ayrı veya aynı inceleme içinde güvenli biçimde sorgulama.</p></article>
+          <article class="feature-row"><span>03</span><h3>Trace waterfall</h3><p>Yavaş isteğin servisler arasındaki yolunu ve kritik span'leri görünür kılma.</p></article>
+          <article class="feature-row"><span>04</span><h3>Doğal dilde inceleme</h3><p>Operatör sorusunu kontrollü araç çağrılarına çevirip kaynak gösteren teşhis sunma.</p></article>
+          <article class="feature-row"><span>05</span><h3>Doctor ve topoloji</h3><p>Bağlantıları, yapılandırmayı, veri kaynaklarını ve servis ilişkilerini doğrulama.</p></article>
+          <article class="feature-row"><span>06</span><h3>Taşınabilir kurulum</h3><p>Yerel geliştirme için Compose, kurumsal ortamlar için Helm ve Kubernetes.</p></article>
+        </div>
+        <figure class="story-visual story-visual--wide reveal-up">
+          <img src="../../assets/projects/sentinel/sentinel-trace-evidence.png" alt="Orders gecikmesini metrik, ilgili log ve trace span kanıtlarıyla inceleyen Sentinel çalışma alanı">
+          <figcaption><span>INCIDENT / 01</span><strong>Her bulgu canlı telemetri kanıtına geri bağlanır.</strong></figcaption>
+        </figure>
+      </section>
+
+      <section class="section shell">
+        <div class="section-head reveal-up">
+          <div><p class="section-kicker"><span>04</span> / Akış</p><h2>Sinyalden<br><span>kanıta dayalı teşhise.</span></h2></div>
+          <p class="section-intro">Sentinel telemetriyi kopyalamadan mevcut kaynaklara bağlanır; sorgu, korelasyon ve açıklamayı izlenebilir bir akışta yürütür.</p>
+        </div>
+        <div class="flow-shell reveal-up">
+          <div class="flow">
+            <div class="flow-step"><i>01</i><strong>Collect</strong><span>OpenTelemetry</span></div>
+            <div class="flow-step"><i>02</i><strong>Store</strong><span>Prom · Loki · Tempo</span></div>
+            <div class="flow-step"><i>03</i><strong>Gateway</strong><span>Read-only tools</span></div>
+            <div class="flow-step"><i>04</i><strong>Correlate</strong><span>Time + service</span></div>
+            <div class="flow-step"><i>05</i><strong>Explain</strong><span>Evidence-backed</span></div>
+          </div>
+        </div>
+        <figure class="story-visual reveal-up">
+          <img src="../../assets/projects/sentinel/sentinel-system-flow.png" alt="OpenTelemetry servislerinden Prometheus Loki Tempo ve read-only gateway üzerinden kanıta dayalı incelemeye Sentinel akışı">
+          <figcaption><span>SYSTEM FLOW</span><strong>Mevcut telemetry backend'leri, tek güvenli inceleme yüzeyi.</strong></figcaption>
+        </figure>
+      </section>
+
+      <section class="section shell">
+        <div class="section-head reveal-up">
+          <div><p class="section-kicker"><span>05</span> / Ürün ekranları</p><h2>Özet görünümden<br><span>kök nedene.</span></h2></div>
+          <p class="section-intro">Küme sağlığını doğrulayın, şüpheli servisi seçin ve ilgili trace ile log kanıtlarına aynı çalışma alanında ilerleyin.</p>
+        </div>
+        <div class="gallery-track reveal-up">
+          <figure class="gallery-item"><img src="../../assets/projects/sentinel/sentinel-04-cluster-doctor.png" alt="Sentinel küme sağlık kontrolü"><span>Cluster doctor</span></figure>
+          <figure class="gallery-item"><img src="../../assets/projects/sentinel/sentinel-02-trace-investigation.png" alt="Sentinel trace incelemesi"><span>Trace investigation</span></figure>
+          <figure class="gallery-item"><img src="../../assets/projects/sentinel/sentinel-05-service-overview.png" alt="Sentinel servis genel görünümü"><span>Service overview</span></figure>
+        </div>
+      </section>
+
+      <section class="section shell">
+        <div class="section-head reveal-up">
+          <div><p class="section-kicker"><span>06</span> / Teknik yaklaşım</p><h2>Mevcut stack'in üstünde.<br><span>Provider'dan bağımsız.</span></h2></div>
+          <p class="section-intro">Gözlem verisi standart backend'lerde kalır. Sentinel erişim, araç orkestrasyonu ve kullanıcı deneyimini ayrı katmanlar olarak ele alır.</p>
+        </div>
+        <div class="tech-layout reveal-up">
+          <div class="tech-copy"><h3>Yeni bir vendor kilidi değil, ortak bir çalışma yüzeyi.</h3><p>Model sağlayıcısı değiştirilebilir; gözlem verisi ve sorgu katmanı şirkette kalır. Asistan erişilemese bile temel CLI ve veri backend'leri çalışır.</p></div>
+          <ul class="tech-list"><li>Python · FastAPI · Typer <span>CORE</span></li><li>Prometheus · Loki · Tempo <span>TELEMETRY</span></li><li>Grafana · OpenTelemetry <span>OBSERVABILITY</span></li><li>Docker Compose · Helm · Kubernetes <span>DEPLOYMENT</span></li><li>OpenAI-compatible · Anthropic · Local <span>AI PROVIDERS</span></li></ul>
+        </div>
+      </section>
+
+      <section class="contact-section" id="demo">
+        <div class="shell contact-grid">
+          <div class="contact-copy reveal-up"><p class="section-kicker"><span>07</span> / Demo</p><h2>Sentinel'i<br>kendi senaryonuzda görün.</h2><p>Mevcut observability stack'inizi, veri güvenliği ihtiyacınızı ve operasyon akışınızı konuşmak için demo erişimi isteyebilirsiniz.</p></div>
+          <form class="demo-form reveal-up" data-product="Sentinel">
+            <div class="form-grid">
+              <div class="field"><label for="sn-name">Adınız</label><input id="sn-name" name="name" required autocomplete="name"></div>
+              <div class="field"><label for="sn-email">E-posta</label><input id="sn-email" name="email" type="email" required autocomplete="email"></div>
+              <div class="field"><label for="sn-company">Şirket / ekip</label><input id="sn-company" name="company" autocomplete="organization"></div>
+              <div class="field"><label for="sn-interest">İlgi alanı</label><select id="sn-interest" name="interest"><option>Ürün demosu</option><option>Teknik mimari</option><option>Pilot kullanım</option><option>İş birliği</option></select></div>
+              <div class="field full"><label for="sn-message">Kısaca ihtiyacınız</label><textarea id="sn-message" name="message" placeholder="Kullandığınız telemetry stack'ini veya senaryoyu anlatabilirsiniz."></textarea></div>
+            </div>
+            <button class="form-submit" type="submit">Demo talebini gönder ↗</button>
+            <p class="form-note">Form, varsayılan e-posta uygulamanızda hazırlanmış bir mesaj açar.</p>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <footer class="project-footer"><div class="shell footer-inner"><span>Ali Çağlar Koçer · 2026</span><a class="next-project" href="../immense/">Sonraki proje: <span>Immense →</span></a></div></footer>
+    <script src="../project.js"></script>
+  </body>
+</html>
