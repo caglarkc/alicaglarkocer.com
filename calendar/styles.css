@@ -595,6 +595,10 @@ a.icon-btn {
   margin: 0 0 16px;
 }
 
+#view-member > .text-btn {
+  margin: 0 0 16px;
+}
+
 .btn-link {
   display: inline-flex;
   align-items: center;

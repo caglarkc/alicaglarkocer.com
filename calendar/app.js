@@ -5,6 +5,7 @@ const state = {
   boardUser: "",
   me: null,
   productId: "",
+  memberId: "",
 };
 
 function errText(data, fallback) {
@@ -107,7 +108,7 @@ function fillProducts(selected) {
 }
 
 function hideViews() {
-  ["view-agenda", "view-ekip", "view-task", "view-products", "view-product"].forEach((id) => {
+  ["view-agenda", "view-ekip", "view-member", "view-task", "view-products", "view-product"].forEach((id) => {
     const el = document.getElementById(id);
     if (el) el.hidden = true;
   });
@@ -165,8 +166,8 @@ async function loadAgenda() {
   setNav("agenda");
   const boardWrap = document.getElementById("board-wrap");
   const boardPick = document.getElementById("board-pick");
-  boardWrap.hidden = !data.members.length;
-  if (data.members.length) {
+  boardWrap.hidden = !data.can_switch;
+  if (data.can_switch && data.members.length) {
     boardPick.innerHTML = data.members
       .map(
         (m) => `<option value="${m.id}" ${m.id === data.assignee.id ? "selected" : ""}>${esc(m.name)}${m.title ? " · " + esc(m.title) : ""}</option>`
@@ -212,7 +213,7 @@ async function loadEkip() {
   const data = await api("/api/ekip");
   const people = data.people
     .map(
-      (p) => `<a class="member-card" href="#" data-board="${p.id}">
+      (p) => `<a class="member-card" href="#" data-member="${p.id}">
         <strong>${esc(p.name)}</strong><span class="role-tag">${esc(p.title || p.role_label || "")}</span>
         <p class="member-stats">${esc(p.username)}<br>
         Bugün ${p.stats.today} açık · ${p.stats.done_today} bitti · kuyruk ${p.stats.inbox} · kaçan ${p.stats.missed}</p>
@@ -221,6 +222,7 @@ async function loadEkip() {
     .join("");
   document.getElementById("view-ekip").innerHTML = `
     <section class="panel"><div class="panel-head"><h2>Üyeler</h2><span class="count">${data.people.length}</span></div>
+      <p class="hint">Üyeye tıklayınca profili, ürünleri ve açık görevleri görünür.</p>
       <div class="team-list">${people}</div></section>
     <section class="panel"><h2>Kullanıcı ekle</h2>
       <form class="new-task" id="form-user">
@@ -236,6 +238,47 @@ async function loadEkip() {
   document.getElementById("view-ekip").hidden = false;
   document.getElementById("week-nav").hidden = true;
   setNav("ekip");
+}
+
+async function loadMember(id) {
+  const data = await api(`/api/ekip/users/${id}`);
+  const p = data.person;
+  const s = p.stats || {};
+  const products = (data.products || [])
+    .map(
+      (item) => `<a class="member-card" href="#" data-product="${item.id}">
+        <strong>${esc(item.name)}</strong>
+        <p class="member-stats">${esc(item.purpose || item.problem || "")}</p>
+      </a>`
+    )
+    .join("") || empty("Hiçbir ürüne ekli değil.");
+  const open = data.tasks || [];
+  const agendaBtn = data.can_switch
+    ? `<button type="button" class="text-btn" data-board="${p.id}">Ajandasını aç</button>`
+    : "";
+  document.getElementById("view-member").innerHTML = `
+    <p class="eyebrow"><button type="button" class="text-btn" data-go="ekip">← Ekip</button></p>
+    <h1>${esc(p.name)}</h1>
+    <div class="meta">
+      <span class="chip">${esc(p.title || "")}</span>
+      <span class="chip">${esc(p.role_label || "")}</span>
+      <span class="chip">${esc(p.username || "")}</span>
+    </div>
+    <p class="hint">Bugün ${s.today || 0} açık · ${s.done_today || 0} bitti · kuyruk ${s.inbox || 0} · kaçan ${s.missed || 0}</p>
+    ${agendaBtn}
+    <section class="panel">
+      <div class="panel-head"><h2>Ürünleri</h2><span class="count">${(data.products || []).length}</span></div>
+      <div class="team-list">${products}</div>
+    </section>
+    <section class="panel">
+      <div class="panel-head"><h2>Açık görevler</h2><span class="count">${open.length}</span></div>
+      <div class="card-list">${open.map((t) => card(t, true)).join("") || empty("Açık iş yok.")}</div>
+    </section>`;
+  hideViews();
+  document.getElementById("view-member").hidden = false;
+  document.getElementById("week-nav").hidden = true;
+  setNav("ekip");
+  state.memberId = id;
 }
 
 async function loadTask(id) {
@@ -460,6 +503,11 @@ document.body.addEventListener("click", async (event) => {
     if (go.dataset.go === "ekip") await loadEkip();
     if (go.dataset.go === "products") await loadProducts();
   }
+  const member = event.target.closest("[data-member]");
+  if (member) {
+    event.preventDefault();
+    await loadMember(member.dataset.member);
+  }
   const board = event.target.closest("[data-board]");
   if (board) {
     event.preventDefault();
@@ -479,6 +527,7 @@ document.body.addEventListener("click", async (event) => {
     await api(`/api/tasks/${id}/toggle`, { method: "POST" });
     if (!document.getElementById("view-task").hidden) await loadTask(id);
     else if (!document.getElementById("view-product").hidden && state.productId) await loadProduct(state.productId);
+    else if (!document.getElementById("view-member").hidden && state.memberId) await loadMember(state.memberId);
     else await loadAgenda();
   }
   if (act.dataset.act === "delete") {
