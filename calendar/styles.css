@@ -481,11 +481,38 @@ h2 {
 
 .top-nav {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 12px;
-  margin-top: 10px;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.nav-link {
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--ink);
   font-family: "Segoe UI", system-ui, sans-serif;
   font-size: 13px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.nav-link:hover {
+  border-color: var(--ink);
+}
+
+.nav-link.is-on {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #f7f3ea;
+}
+
+.nav-link-out {
+  margin-left: 4px;
+  color: var(--muted);
+  font-weight: 500;
 }
 
 .board-pick {
@@ -797,15 +824,48 @@ a.icon-btn {
 .check-line {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   gap: 8px;
+  margin: 0;
+  padding: 4px 0;
+  text-align: left;
   font-family: "Segoe UI", system-ui, sans-serif;
   font-size: 13px;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.check-line span {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.new-task .check-line input,
+.new-task .check-line input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  margin: 0;
+  padding: 0;
+  flex: 0 0 16px;
+  border-radius: 4px;
+  accent-color: var(--accent);
 }
 
 .member-picks {
   display: grid;
-  gap: 6px;
-  margin: 8px 0;
+  gap: 2px;
+  max-height: 180px;
+  margin: 4px 0 10px;
+  padding: 8px 10px;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
 }
 
 .group-edit {
