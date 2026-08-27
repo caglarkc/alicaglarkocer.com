@@ -4,6 +4,7 @@ const state = {
   week: 0,
   boardUser: "",
   me: null,
+  productId: "",
 };
 
 function errText(data, fallback) {
@@ -34,16 +35,22 @@ function show(id) {
 
 function card(task, check) {
   const cls = `task focus-${task.priority || task.focus || "medium"}${task.done ? " done" : ""}${task.kind === "assigned" ? " assigned" : ""}${task.warning ? " warning" : ""}`;
-  const drag = task.can_schedule ? `draggable="true"` : "";
-  const mark = check && task.can_schedule
-    ? `<button type="button" class="check-btn" data-act="toggle" data-id="${task.id}">${task.done ? "✓" : "○"}</button>`
-    : "";
+  const drag = task.can_schedule && !task.done ? `draggable="true"` : "";
+  const canMark = task.can_toggle;
+  const mark = canMark
+    ? `<button type="button" class="check-btn" data-act="toggle" data-id="${task.id}" title="${task.done ? "Yeniden aç" : "Tamamla"}">${task.done ? "✓" : "○"}</button>`
+    : task.done
+      ? `<span class="check-mark" title="Tamamlandı">✓</span>`
+      : "";
   const del = task.can_edit
     ? `<button type="button" class="ghost-btn" data-act="delete" data-id="${task.id}">×</button>`
     : "";
+  const who = (task.assignees || []).map((a) => a.name).filter(Boolean);
+  const names = who.length ? who.join(", ") : task.assignee_name || "";
   const chips = [
     task.kind === "assigned" ? `<span class="chip lock">Kurucu işi</span>` : `<span class="chip">Kişisel</span>`,
-    task.assignee_name ? `<span class="chip">${esc(task.assignee_name)}</span>` : "",
+    names ? `<span class="chip">${esc(names)}</span>` : "",
+    task.closed_by ? `<span class="chip closed">${esc(task.closed_by)} kapattı</span>` : "",
     task.deadline_date ? `<span class="chip">En geç ${task.deadline_date}${task.deadline_time ? " " + task.deadline_time : ""}</span>` : "",
     task.estimated_time ? `<span class="chip">${task.estimated_time}</span>` : "",
     `<span class="chip">Öncelik ${esc(task.priority_label || "")}</span>`,
@@ -177,8 +184,8 @@ async function loadAgenda() {
   }
   document.getElementById("inbox-count").textContent = data.inbox.length;
   document.getElementById("missed-count").textContent = data.missed.length;
-  document.getElementById("inbox-list").innerHTML = data.inbox.map((t) => card(t, false)).join("") || empty("Liste boş.");
-  document.getElementById("missed-list").innerHTML = data.missed.map((t) => card(t, false)).join("") || empty("Gecikmiş iş yok.");
+  document.getElementById("inbox-list").innerHTML = data.inbox.map((t) => card(t, true)).join("") || empty("Liste boş.");
+  document.getElementById("missed-list").innerHTML = data.missed.map((t) => card(t, true)).join("") || empty("Gecikmiş iş yok.");
   document.getElementById("week").innerHTML = data.days
     .map(
       (day) => `<section class="day${day.weekend ? " weekend" : ""}${day.today ? " today" : ""}${day.past ? " past" : ""}" data-drop="scheduled" data-date="${day.iso}">
@@ -191,7 +198,7 @@ async function loadAgenda() {
     .map(
       (item) => `<button type="button" class="done-item" data-act="open" data-id="${item.id}">
         <strong>${esc(item.title)}</strong>
-        <span>${esc(item.actor_name)}${item.project ? " · " + esc(item.project) : ""}</span>
+        <span>${item.actor_name ? esc(item.actor_name) + " kapattı" : "Tamamlandı"}${item.project ? " · " + esc(item.project) : ""}</span>
       </button>`
     )
     .join("") || empty("Henüz yok.");
@@ -234,9 +241,8 @@ async function loadEkip() {
 async function loadTask(id) {
   const data = await api(`/api/tasks/${id}`);
   const t = data.task;
-  const assigned = t.assignee_name
-    ? `${t.assignee_name}${t.assignee_title ? " · " + t.assignee_title : ""}`
-    : "Atanmamış";
+  const assigned = (t.assignees || []).map((a) => a.name).filter(Boolean).join(", ")
+    || (t.assignee_name ? `${t.assignee_name}${t.assignee_title ? " · " + t.assignee_title : ""}` : "Atanmamış");
   const comments = data.comments
     .map(
       (c) => `<article class="comment">
@@ -255,8 +261,9 @@ async function loadTask(id) {
   const productOpts = [`<option value="">Ürün seç</option>`]
     .concat((data.products || []).map((p) => `<option value="${esc(p.name)}" ${t.project === p.name ? "selected" : ""}>${esc(p.name)}</option>`))
     .join("");
+  const selectedPeople = new Set(t.bundle_assignee_ids || (t.assignee_id ? [t.assignee_id] : []));
   const peopleChecks = (data.members || [])
-    .map((m) => `<label class="check-line"><input type="checkbox" name="targets" value="${m.id}" ${t.assignee_id === m.id ? "checked" : ""}/> <span>${esc(m.name)}</span></label>`)
+    .map((m) => `<label class="check-line"><input type="checkbox" name="targets" value="${m.id}" ${selectedPeople.has(m.id) ? "checked" : ""}/> <span>${esc(m.name)}</span></label>`)
     .join("");
   const fields = t.can_edit
     ? `<form id="form-edit" class="new-task" data-id="${t.id}">
@@ -284,14 +291,19 @@ async function loadTask(id) {
         <p><span>Öncelik</span>${esc(t.priority_label || "—")}</p>
         <p><span>Atanan</span>${esc(assigned)}</p>
       </div>`;
+  const closeBtn = t.can_toggle
+    ? `<button type="button" class="primary task-close" data-act="toggle" data-id="${t.id}">${t.done ? "Yeniden aç" : "Tamamladım"}</button>`
+    : "";
   document.getElementById("view-task").innerHTML = `
     <p class="eyebrow"><button type="button" class="text-btn" data-go="agenda">← Ajanda</button></p>
     <h1>${esc(t.title)}</h1>
     <div class="meta">
       <span class="chip">${t.kind === "assigned" ? "Kurucu işi" : "Kişisel"}</span>
       ${t.warning ? `<span class="chip late">UYARI</span>` : ""}
+      ${t.closed_by ? `<span class="chip closed">${esc(t.closed_by)} kapattı</span>` : ""}
       ${t.can_edit ? "" : `<span class="chip">Salt okunur</span>`}
     </div>
+    ${closeBtn}
     <section class="panel">
       <div class="panel-head"><h2>İş bilgileri</h2></div>
       ${t.can_edit ? "" : `<p class="hint">Alanları değiştiremezsin. Açıklama ekleyebilir, kendi eklediklerini silebilirsin.</p>`}
@@ -378,16 +390,17 @@ async function loadProduct(id) {
     ${edit}
     ${crewPanel}
     <section class="panel"><div class="panel-head"><h2>Açık görevler</h2><span class="count">${open.length}</span></div>
-      <div class="card-list">${open.map((t) => card(t, false)).join("") || empty("Açık iş yok.")}</div>
+      <div class="card-list">${open.map((t) => card(t, true)).join("") || empty("Açık iş yok.")}</div>
     </section>
     <section class="panel"><div class="panel-head"><h2>Geçmiş</h2><span class="count">${done.length}</span></div>
       <p class="hint">Tamamlanan görevler.</p>
-      <div class="card-list">${done.map((t) => card(t, false)).join("") || empty("Henüz tamamlanan iş yok.")}</div>
+      <div class="card-list">${done.map((t) => card(t, true)).join("") || empty("Henüz tamamlanan iş yok.")}</div>
     </section>`;
   hideViews();
   document.getElementById("view-product").hidden = false;
   document.getElementById("week-nav").hidden = true;
   setNav("products");
+  state.productId = id;
 }
 
 function formFields(form) {
@@ -464,7 +477,9 @@ document.body.addEventListener("click", async (event) => {
   if (act.dataset.act === "open") await loadTask(id);
   if (act.dataset.act === "toggle") {
     await api(`/api/tasks/${id}/toggle`, { method: "POST" });
-    await loadAgenda();
+    if (!document.getElementById("view-task").hidden) await loadTask(id);
+    else if (!document.getElementById("view-product").hidden && state.productId) await loadProduct(state.productId);
+    else await loadAgenda();
   }
   if (act.dataset.act === "delete") {
     if (!confirm("Bu işi silmek istediğine emin misin?")) return;

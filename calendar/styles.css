@@ -577,6 +577,24 @@ a.icon-btn {
   cursor: pointer;
 }
 
+.check-mark {
+  width: 22px;
+  height: 22px;
+  margin-top: 1px;
+  display: grid;
+  place-items: center;
+  color: var(--done);
+  font-size: 11px;
+}
+
+.chip.closed {
+  color: var(--accent);
+}
+
+.task-close {
+  margin: 0 0 16px;
+}
+
 .btn-link {
   display: inline-flex;
   align-items: center;
