@@ -595,6 +595,31 @@ a.icon-btn {
   margin: 0 0 16px;
 }
 
+.phase-track {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 16px;
+  padding: 0;
+  list-style: none;
+}
+
+.phase-track li {
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  font-size: 11px;
+  color: var(--muted);
+  background: #fff;
+}
+
+.phase-track li.is-on {
+  border-color: var(--accent);
+  color: var(--ink);
+  background: var(--today);
+}
+
 #view-member > .text-btn {
   margin: 0 0 16px;
 }

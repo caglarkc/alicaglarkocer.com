@@ -98,6 +98,18 @@ function crewNames(members) {
   return (members || []).map((u) => u.name).join(", ") || "Görevli yok";
 }
 
+function phaseOptions(phases, selected) {
+  return (phases || [])
+    .map((p) => `<option value="${esc(p.id)}" ${p.id === selected ? "selected" : ""}>${esc(p.label)}</option>`)
+    .join("");
+}
+
+function phaseTrack(phases, selected) {
+  return `<ol class="phase-track">${(phases || [])
+    .map((p) => `<li class="${p.id === selected ? "is-on" : ""}">${esc(p.label)}</li>`)
+    .join("")}</ol>`;
+}
+
 function fillProducts(selected) {
   document.querySelectorAll(".product-pick").forEach((el) => {
     const current = selected || el.value;
@@ -369,8 +381,8 @@ async function loadProducts() {
   const cards = data.products
     .map(
       (p) => `<a class="member-card" href="#" data-product="${p.id}">
-        <strong>${esc(p.name)}</strong><span class="role-tag">${p.active_count} açık iş</span>
-        <p class="member-stats">${p.purpose ? `${esc(p.purpose)}<br>` : ""}Görevliler: ${esc(crewNames(p.members))}</p>
+        <strong>${esc(p.name)}</strong><span class="role-tag">${esc(p.phase_label || "—")}</span>
+        <p class="member-stats">${p.purpose ? `${esc(p.purpose)}<br>` : ""}${p.active_count} açık iş · Görevliler: ${esc(crewNames(p.members))}</p>
       </a>`
     )
     .join("") || empty("Henüz ürün yok.");
@@ -379,11 +391,12 @@ async function loadProducts() {
     : "";
   document.getElementById("view-products").innerHTML = `
     <section class="panel"><div class="panel-head"><h2>Ürünler</h2><span class="count">${data.products.length}</span></div>
-      <p class="hint">Ürüne girince amacı, teknolojileri, görevliler ve görev geçmişi görünür.</p>
+      <p class="hint">Ürüne girince fazı, amacı, teknolojileri, görevliler ve görev geçmişi görünür.</p>
       <div class="team-list">${cards}</div></section>
     ${data.can_add ? `<section class="panel"><h2>Ürün ekle</h2>
       <form class="new-task" id="form-product">
         <input name="name" placeholder="Ürün adı" required />
+        <label>Faz <select name="phase">${phaseOptions(data.phases, "planning")}</select></label>
         <textarea name="problem" rows="2" placeholder="Çözdüğü sorun"></textarea>
         <textarea name="purpose" rows="2" placeholder="Kısaca amacı"></textarea>
         <input name="tech" placeholder="Kullanılan teknolojiler" />
@@ -411,6 +424,7 @@ async function loadProduct(id) {
     ? `<section class="panel"><h2>Ürün bilgileri</h2>
         <form class="new-task" id="form-product-edit" data-id="${p.id}">
           <input name="name" required value="${esc(p.name)}" />
+          <label>Faz <select name="phase">${phaseOptions(data.phases, p.phase)}</select></label>
           <label>Çözdüğü sorun <textarea name="problem" rows="2">${esc(p.problem || "")}</textarea></label>
           <label>Kısaca amacı <textarea name="purpose" rows="2">${esc(p.purpose || "")}</textarea></label>
           <label>Teknolojiler <input name="tech" value="${esc(p.tech || "")}" /></label>
@@ -419,6 +433,7 @@ async function loadProduct(id) {
           <button class="primary" type="submit">Kaydet</button>
         </form></section>`
     : `<section class="panel info-grid">
+        <p><span>Faz</span>${esc(p.phase_label || "—")}</p>
         <p><span>Çözdüğü sorun</span>${esc(p.problem || "—")}</p>
         <p><span>Kısaca amacı</span>${esc(p.purpose || "—")}</p>
         <p><span>Teknolojiler</span>${esc(p.tech || "—")}</p>
@@ -430,6 +445,7 @@ async function loadProduct(id) {
   document.getElementById("view-product").innerHTML = `
     <p class="eyebrow"><button type="button" class="text-btn" data-go="products">← Ürünler</button></p>
     <h1>${esc(p.name)}</h1>
+    ${phaseTrack(data.phases, p.phase)}
     ${edit}
     ${crewPanel}
     <section class="panel"><div class="panel-head"><h2>Açık görevler</h2><span class="count">${open.length}</span></div>
