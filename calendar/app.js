@@ -1,8 +1,6 @@
 const API = window.AJANDA_API.replace(/\/$/, "");
 const state = {
   token: localStorage.getItem("ajanda_token") || "",
-  pending: "",
-  pinMode: "enter",
   week: 0,
   boardUser: "",
   me: null,
@@ -20,7 +18,7 @@ async function api(path, options = {}) {
     headers["Content-Type"] = "application/json";
     options.body = JSON.stringify(options.body);
   }
-  const token = options.pending ? state.pending : state.token;
+  const token = state.token;
   if (token) headers.Authorization = `Bearer ${token}`;
   const res = await fetch(`${API}${path}`, { ...options, headers });
   const data = await res.json().catch(() => ({}));
@@ -184,7 +182,6 @@ async function loadEkip() {
         <div class="field-row"><input name="title" placeholder="Ünvan" required />
           <select name="role"><option value="worker">Worker</option><option value="admin">Admin</option></select>
         </div>
-        <label>6 haneli PIN <input name="pin" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required /></label>
         <button class="primary" type="submit">Oluştur</button>
       </form>
       <pre class="key-banner" id="issued" hidden></pre>
@@ -246,31 +243,8 @@ document.getElementById("login-form").onsubmit = async (event) => {
   try {
     const fields = formFields(event.target);
     const data = await api("/api/login", { method: "POST", body: fields });
-    state.pending = data.token;
-    state.pinMode = data.need_pin;
-    document.getElementById("pin-title").textContent = data.need_pin === "set" ? "6 haneli PIN belirle" : "PIN";
-    document.getElementById("pin2-wrap").hidden = data.need_pin !== "set";
-    document.getElementById("pin-form").pin2.required = data.need_pin === "set";
-    show("screen-pin");
-  } catch (e) {
-    err.textContent = e.message;
-    err.hidden = false;
-  }
-};
-
-document.getElementById("pin-form").onsubmit = async (event) => {
-  event.preventDefault();
-  const err = document.getElementById("pin-error");
-  err.hidden = true;
-  try {
-    const fields = formFields(event.target);
-    const data = await api("/api/pin", {
-      method: "POST",
-      body: { token: state.pending, pin: fields.pin, pin2: fields.pin2 || "" },
-    });
     state.token = data.token;
     localStorage.setItem("ajanda_token", data.token);
-    state.pending = "";
     show("screen-app");
     await loadAgenda();
   } catch (e) {
@@ -353,7 +327,7 @@ document.getElementById("view-ekip").addEventListener("submit", async (event) =>
     const data = await api("/api/ekip/users", { method: "POST", body });
     const box = document.getElementById("issued");
     box.hidden = false;
-    box.textContent = `kullanıcı: ${data.issued.username}\nünvan: ${data.issued.title}\nşifre: ${data.issued.password}\nPIN: ${data.issued.pin}\nrol: ${data.issued.role}`;
+    box.textContent = `kullanıcı: ${data.issued.username}\nünvan: ${data.issued.title}\nşifre: ${data.issued.password}\nrol: ${data.issued.role}`;
     await loadEkip();
     document.getElementById("issued").hidden = false;
     document.getElementById("issued").textContent = box.textContent;
