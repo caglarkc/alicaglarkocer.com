@@ -98,16 +98,59 @@ function crewNames(members) {
   return (members || []).map((u) => u.name).join(", ") || "Görevli yok";
 }
 
-function phaseOptions(phases, selected) {
+function phaseIds(list) {
+  return (list || []).map((p) => (p && p.id) || p);
+}
+
+function phaseChecks(phases, name, selected, type) {
+  const picked = new Set(Array.isArray(selected) ? selected : selected ? [selected] : []);
   return (phases || [])
-    .map((p) => `<option value="${esc(p.id)}" ${p.id === selected ? "selected" : ""}>${esc(p.label)}</option>`)
+    .map(
+      (p) =>
+        `<label class="check-line"><input type="${type}" name="${name}" value="${p.id}" ${picked.has(p.id) ? "checked" : ""}/> <span>${esc(p.label)}</span></label>`
+    )
     .join("");
 }
 
-function phaseTrack(phases, selected) {
-  return `<ol class="phase-track">${(phases || [])
-    .map((p) => `<li class="${p.id === selected ? "is-on" : ""}">${esc(p.label)}</li>`)
-    .join("")}</ol>`;
+function phaseBoard(phases, product) {
+  const done = phaseIds(product.done_phases);
+  const upcoming = phaseIds(product.upcoming_phases);
+  return `<div class="phase-board">
+    <div><p class="form-kicker">Tamamlanan</p><div class="member-picks">${phaseChecks(phases, "done_phases", done, "checkbox")}</div></div>
+    <div><p class="form-kicker">Şu anki</p><div class="member-picks">${phaseChecks(phases, "phase", product.phase, "radio")}</div></div>
+    <div><p class="form-kicker">Gelecek</p><div class="member-picks">${phaseChecks(phases, "upcoming_phases", upcoming, "checkbox")}</div></div>
+  </div>`;
+}
+
+function phaseView(product) {
+  const chips = (items) =>
+    (items || []).length
+      ? `<ol class="phase-track">${items.map((p) => `<li class="is-on">${esc(p.label)}</li>`).join("")}</ol>`
+      : `<p class="empty">—</p>`;
+  return `<div class="phase-board">
+    <div><p class="form-kicker">Tamamlanan</p>${chips(product.done_phases)}</div>
+    <div><p class="form-kicker">Şu anki</p>${chips(product.phase_label ? [{ label: product.phase_label }] : [])}</div>
+    <div><p class="form-kicker">Gelecek</p>${chips(product.upcoming_phases)}</div>
+  </div>`;
+}
+
+function bindPhaseBoard(root) {
+  if (!root) return;
+  root.addEventListener("change", (event) => {
+    const el = event.target;
+    if (!el || !["done_phases", "upcoming_phases", "phase"].includes(el.name) || !el.checked) return;
+    const val = el.value;
+    if (el.name === "phase") {
+      root.querySelectorAll(`[name="done_phases"][value="${val}"], [name="upcoming_phases"][value="${val}"]`).forEach((box) => {
+        box.checked = false;
+      });
+      return;
+    }
+    const other = el.name === "done_phases" ? "upcoming_phases" : "done_phases";
+    root.querySelectorAll(`[name="${other}"][value="${val}"], [name="phase"][value="${val}"]`).forEach((box) => {
+      box.checked = false;
+    });
+  });
 }
 
 function fillProducts(selected) {
@@ -396,7 +439,7 @@ async function loadProducts() {
     ${data.can_add ? `<section class="panel"><h2>Ürün ekle</h2>
       <form class="new-task" id="form-product">
         <input name="name" placeholder="Ürün adı" required />
-        <label>Faz <select name="phase">${phaseOptions(data.phases, "planning")}</select></label>
+        ${phaseBoard(data.phases, { phase: "planning", done_phases: [], upcoming_phases: (data.phases || []).filter((p) => p.id !== "planning") })}
         <textarea name="problem" rows="2" placeholder="Çözdüğü sorun"></textarea>
         <textarea name="purpose" rows="2" placeholder="Kısaca amacı"></textarea>
         <input name="tech" placeholder="Kullanılan teknolojiler" />
@@ -407,6 +450,7 @@ async function loadProducts() {
   document.getElementById("view-products").hidden = false;
   document.getElementById("week-nav").hidden = true;
   setNav("products");
+  bindPhaseBoard(document.getElementById("form-product"));
 }
 
 async function loadProduct(id) {
@@ -424,7 +468,7 @@ async function loadProduct(id) {
     ? `<section class="panel"><h2>Ürün bilgileri</h2>
         <form class="new-task" id="form-product-edit" data-id="${p.id}">
           <input name="name" required value="${esc(p.name)}" />
-          <label>Faz <select name="phase">${phaseOptions(data.phases, p.phase)}</select></label>
+          ${phaseBoard(data.phases, p)}
           <label>Çözdüğü sorun <textarea name="problem" rows="2">${esc(p.problem || "")}</textarea></label>
           <label>Kısaca amacı <textarea name="purpose" rows="2">${esc(p.purpose || "")}</textarea></label>
           <label>Teknolojiler <input name="tech" value="${esc(p.tech || "")}" /></label>
@@ -433,11 +477,27 @@ async function loadProduct(id) {
           <button class="primary" type="submit">Kaydet</button>
         </form></section>`
     : `<section class="panel info-grid">
-        <p><span>Faz</span>${esc(p.phase_label || "—")}</p>
         <p><span>Çözdüğü sorun</span>${esc(p.problem || "—")}</p>
         <p><span>Kısaca amacı</span>${esc(p.purpose || "—")}</p>
         <p><span>Teknolojiler</span>${esc(p.tech || "—")}</p>
       </section>`;
+  const notes = (data.notes || [])
+    .map(
+      (n) => `<article class="comment">
+        <div class="comment-top">
+          <span class="muted">${esc(n.created_at)}</span>
+          ${n.can_delete ? `<button type="button" class="ghost-btn" data-act="del-phase-note" data-id="${p.id}" data-note="${n.id}">×</button>` : ""}
+        </div>
+        <p>${esc(n.body)}</p>
+      </article>`
+    )
+    .join("") || empty("Henüz faz notu yok.");
+  const noteForm = data.can_note
+    ? `<form id="form-phase-note" class="new-task" data-id="${p.id}">
+        <textarea name="body" rows="3" required placeholder="Faz notu"></textarea>
+        <button class="primary" type="submit">Not bırak</button>
+      </form>`
+    : "";
   const crewPanel = `<section class="panel">
         <div class="panel-head"><h2>Görevliler</h2><span class="count">${(p.members || []).length}</span></div>
         ${crew ? `<ul class="crew-list">${crew}</ul>` : empty("Henüz görevli yok.")}
@@ -445,8 +505,13 @@ async function loadProduct(id) {
   document.getElementById("view-product").innerHTML = `
     <p class="eyebrow"><button type="button" class="text-btn" data-go="products">← Ürünler</button></p>
     <h1>${esc(p.name)}</h1>
-    ${phaseTrack(data.phases, p.phase)}
+    ${phaseView(p)}
     ${edit}
+    <section class="panel">
+      <div class="panel-head"><h2>${esc(data.note_heading || "Faz Notu")}</h2><span class="count">${(data.notes || []).length}</span></div>
+      <div class="comment-list">${notes}</div>
+      ${noteForm}
+    </section>
     ${crewPanel}
     <section class="panel"><div class="panel-head"><h2>Açık görevler</h2><span class="count">${open.length}</span></div>
       <div class="card-list">${open.map((t) => card(t, true)).join("") || empty("Açık iş yok.")}</div>
@@ -460,6 +525,7 @@ async function loadProduct(id) {
   document.getElementById("week-nav").hidden = true;
   setNav("products");
   state.productId = id;
+  bindPhaseBoard(document.getElementById("form-product-edit"));
 }
 
 function formFields(form) {
@@ -556,6 +622,11 @@ document.body.addEventListener("click", async (event) => {
     await api(`/api/tasks/${id}/comment/${act.dataset.note}/delete`, { method: "POST" });
     await loadTask(id);
   }
+  if (act.dataset.act === "del-phase-note") {
+    if (!confirm("Bu faz notunu silmek istediğine emin misin?")) return;
+    await api(`/api/products/${id}/notes/${act.dataset.note}/delete`, { method: "POST" });
+    await loadProduct(id);
+  }
 });
 
 document.getElementById("form-personal").onsubmit = async (event) => {
@@ -612,6 +683,8 @@ document.getElementById("view-products").addEventListener("submit", async (event
   if (event.target.id === "form-product") {
     const body = formFields(event.target);
     body.member_ids = checkedValues(event.target, "member_ids");
+    body.done_phases = checkedValues(event.target, "done_phases");
+    body.upcoming_phases = checkedValues(event.target, "upcoming_phases");
     await api("/api/products", { method: "POST", body });
     await loadProducts();
   }
@@ -622,7 +695,16 @@ document.getElementById("view-product").addEventListener("submit", async (event)
   if (event.target.id === "form-product-edit") {
     const body = formFields(event.target);
     body.member_ids = checkedValues(event.target, "member_ids");
+    body.done_phases = checkedValues(event.target, "done_phases");
+    body.upcoming_phases = checkedValues(event.target, "upcoming_phases");
     await api(`/api/products/${event.target.dataset.id}`, { method: "POST", body });
+    await loadProduct(event.target.dataset.id);
+  }
+  if (event.target.id === "form-phase-note") {
+    await api(`/api/products/${event.target.dataset.id}/notes`, {
+      method: "POST",
+      body: { body: event.target.body.value },
+    });
     await loadProduct(event.target.dataset.id);
   }
 });

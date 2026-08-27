@@ -604,6 +604,22 @@ a.icon-btn {
   list-style: none;
 }
 
+.phase-board {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0 0 16px;
+}
+
+.phase-board .member-picks,
+.phase-board .phase-track {
+  margin: 4px 0 0;
+}
+
+.phase-board .empty {
+  margin: 8px 0 0;
+}
+
 .phase-track li {
   padding: 4px 10px;
   border: 1px solid var(--line);
@@ -907,7 +923,8 @@ a.icon-btn {
 }
 
 .new-task .check-line input,
-.new-task .check-line input[type="checkbox"] {
+.new-task .check-line input[type="checkbox"],
+.new-task .check-line input[type="radio"] {
   width: 16px;
   height: 16px;
   min-width: 16px;
@@ -941,6 +958,10 @@ a.icon-btn {
 
 @media (max-width: 1100px) {
   .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .phase-board {
     grid-template-columns: 1fr;
   }
 
