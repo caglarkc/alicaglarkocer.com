@@ -719,6 +719,42 @@ a.icon-btn {
   background: #fff;
 }
 
+.comment-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.comment-top .ghost-btn {
+  margin-left: auto;
+}
+
+.info-grid {
+  display: grid;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.info-grid p {
+  margin: 0;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  font-size: 13px;
+  white-space: pre-wrap;
+}
+
+.info-grid span {
+  display: block;
+  margin-bottom: 2px;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.day.past {
+  cursor: not-allowed;
+}
+
 .comment p {
   margin: 6px 0 0;
   font-family: "Segoe UI", system-ui, sans-serif;

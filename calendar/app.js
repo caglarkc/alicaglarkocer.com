@@ -46,7 +46,7 @@ function card(task, check) {
     task.deadline_date ? `<span class="chip">En geç ${task.deadline_date}${task.deadline_time ? " " + task.deadline_time : ""}</span>` : "",
     task.estimated_time ? `<span class="chip">${task.estimated_time}</span>` : "",
     `<span class="chip">${task.focus_label || ""}</span>`,
-    `<span class="chip">${task.comment_count || 0} yorum</span>`,
+    `<span class="chip">${task.comment_count || 0} açıklama</span>`,
   ].join("");
   return `<article class="${cls}" ${drag} data-id="${task.id}">
     <div class="task-top">
@@ -56,7 +56,7 @@ function card(task, check) {
         <p class="task-title">${esc(task.title)}</p>
       </div>
       <div class="task-actions">
-        <button type="button" class="ghost-btn" data-act="open" data-id="${task.id}">↪</button>
+        <button type="button" class="text-btn" data-act="open" data-id="${task.id}">Düzenle</button>
         ${del}
       </div>
     </div>
@@ -80,6 +80,10 @@ function empty(text) {
 function bindDrop() {
   document.querySelectorAll("[data-drop]").forEach((zone) => {
     zone.ondragover = (event) => {
+      if (zone.classList.contains("past")) {
+        event.dataTransfer.dropEffect = "none";
+        return;
+      }
       event.preventDefault();
       zone.classList.add("drag-over");
     };
@@ -87,6 +91,7 @@ function bindDrop() {
     zone.ondrop = async (event) => {
       event.preventDefault();
       zone.classList.remove("drag-over");
+      if (zone.classList.contains("past")) return;
       const id = event.dataTransfer.getData("text/plain");
       if (!id) return;
       await api(`/api/tasks/${id}/move`, {
@@ -203,26 +208,81 @@ async function loadEkip() {
 async function loadTask(id) {
   const data = await api(`/api/tasks/${id}`);
   const t = data.task;
+  const assigned = t.group_name
+    ? `Grup: ${t.group_name}`
+    : t.assignee_name
+      ? `${t.assignee_name}${t.assignee_title ? " · " + t.assignee_title : ""}`
+      : "Atanmamış";
   const comments = data.comments
-    .map((c) => `<article class="comment"><strong>${esc(c.name)}</strong><span class="muted">${esc(c.created_at)}</span><p>${esc(c.body)}</p></article>`)
-    .join("") || empty("Yorum yok.");
-  const dist = data.group
+    .map(
+      (c) => `<article class="comment">
+        <div class="comment-top">
+          <strong>${esc(c.name)}</strong>
+          <span class="muted">${esc(c.created_at)}</span>
+          ${c.can_delete ? `<button type="button" class="ghost-btn" data-act="del-note" data-id="${t.id}" data-note="${c.id}">×</button>` : ""}
+        </div>
+        <p>${esc(c.body)}</p>
+      </article>`
+    )
+    .join("") || empty("Açıklama yok.");
+  const dist = data.group && data.can_assign
     ? `<section class="panel"><h2>Gruba dağıt</h2>
         <form id="form-dist" class="new-task">${data.group.members
           .map((m) => `<label class="check-line"><input type="checkbox" name="member_id" value="${m.id}" checked /> ${esc(m.name)}</label>`)
           .join("")}<button class="primary" type="submit">Dağıt</button></form></section>`
     : "";
+  const focusOpts = ["low", "medium", "high"]
+    .map((key) => `<option value="${key}" ${t.focus === key ? "selected" : ""}>${esc({ low: "Düşük", medium: "Orta", high: "Yüksek" }[key])}</option>`)
+    .join("");
+  const targetOpts = [
+    `<option value="">Atama: ${esc(assigned)}</option>`,
+    ...data.members.map((m) => `<option value="user:${m.id}" ${t.target === "user:" + m.id ? "selected" : ""}>${esc(m.name)}${m.title ? " · " + esc(m.title) : ""}</option>`),
+    ...data.groups.map((g) => `<option value="group:${g.id}" ${t.target === "group:" + g.id ? "selected" : ""}>Grup: ${esc(g.name)}</option>`),
+  ].join("");
+  const fields = t.can_edit
+    ? `<form id="form-edit" class="new-task" data-id="${t.id}">
+        <div class="field-row">
+          <label>Başlık <input name="title" required value="${esc(t.title)}" /></label>
+          <label>Proje <input name="project" value="${esc(t.project || "")}" /></label>
+        </div>
+        <label>Açıklama <textarea name="description" rows="3">${esc(t.description || "")}</textarea></label>
+        <div class="field-row">
+          <label>En geç <input type="date" name="deadline_date" value="${esc(t.deadline_date || "")}" /></label>
+          <label>Saat <input type="time" name="deadline_time" value="${esc(t.deadline_time || "")}" /></label>
+        </div>
+        <div class="field-row">
+          <label>Süre <input name="estimated_time" value="${esc(t.estimated_time || "")}" /></label>
+          <label>Odak <select name="focus">${focusOpts}</select></label>
+        </div>
+        ${data.can_assign ? `<label>Kişi / grup <select name="target">${targetOpts}</select></label>` : ""}
+        <button class="primary" type="submit">Kaydet</button>
+      </form>`
+    : `<div class="info-grid">
+        <p><span>Proje</span>${esc(t.project || "—")}</p>
+        <p><span>Açıklama</span>${esc(t.description || "—")}</p>
+        <p><span>En geç</span>${esc(t.deadline_date || "—")}${t.deadline_time ? " " + esc(t.deadline_time) : ""}</p>
+        <p><span>Süre</span>${esc(t.estimated_time || "—")}</p>
+        <p><span>Odak</span>${esc(t.focus_label || "—")}</p>
+        <p><span>Atanan</span>${esc(assigned)}</p>
+      </div>`;
   document.getElementById("view-task").innerHTML = `
     <p class="eyebrow"><button type="button" class="text-btn" data-go="agenda">← Ajanda</button></p>
     <h1>${esc(t.title)}</h1>
-    <div class="meta"><span class="chip">${t.kind === "assigned" ? "Kurucu işi" : "Kişisel"}</span></div>
-    ${t.can_edit ? "" : `<section class="panel"><p class="hint">Bu işi yalnızca kurucu değiştirir.</p><p class="task-desc">${esc(t.description)}</p></section>`}
+    <div class="meta">
+      <span class="chip">${t.kind === "assigned" ? "Kurucu işi" : "Kişisel"}</span>
+      ${t.can_edit ? "" : `<span class="chip">Salt okunur</span>`}
+    </div>
+    <section class="panel">
+      <div class="panel-head"><h2>İş bilgileri</h2></div>
+      ${t.can_edit ? "" : `<p class="hint">Alanları değiştiremezsin. Açıklama ekleyebilir, kendi eklediklerini silebilirsin.</p>`}
+      ${fields}
+    </section>
     ${dist}
-    <section class="panel"><h2>Yorumlar</h2>
+    <section class="panel"><h2>Ek açıklamalar</h2>
       <div class="comment-list">${comments}</div>
       <form id="form-comment" class="new-task" data-id="${t.id}">
-        <textarea name="body" rows="3" required placeholder="Not / açıklama"></textarea>
-        <button class="primary" type="submit">Yorum ekle</button>
+        <textarea name="body" rows="3" required placeholder="Yeni açıklama"></textarea>
+        <button class="primary" type="submit">Açıklama ekle</button>
       </form>
     </section>`;
   document.getElementById("view-agenda").hidden = true;
@@ -298,8 +358,14 @@ document.body.addEventListener("click", async (event) => {
     await loadAgenda();
   }
   if (act.dataset.act === "delete") {
+    if (!confirm("Bu işi silmek istediğine emin misin?")) return;
     await api(`/api/tasks/${id}/delete`, { method: "POST" });
     await loadAgenda();
+  }
+  if (act.dataset.act === "del-note") {
+    if (!confirm("Bu açıklamayı silmek istediğine emin misin?")) return;
+    await api(`/api/tasks/${id}/comment/${act.dataset.note}/delete`, { method: "POST" });
+    await loadTask(id);
   }
 });
 
@@ -349,6 +415,11 @@ document.getElementById("view-ekip").addEventListener("submit", async (event) =>
 
 document.getElementById("view-task").addEventListener("submit", async (event) => {
   event.preventDefault();
+  if (event.target.id === "form-edit") {
+    const body = formFields(event.target);
+    await api(`/api/tasks/${event.target.dataset.id}`, { method: "POST", body });
+    await loadTask(event.target.dataset.id);
+  }
   if (event.target.id === "form-comment") {
     await api(`/api/tasks/${event.target.dataset.id}/comment`, {
       method: "POST",
