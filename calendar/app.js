@@ -112,8 +112,8 @@ async function loadAgenda() {
   const data = await api(`/api/agenda?${q}`);
   state.me = data.user;
   document.getElementById("eyebrow").textContent = data.viewing_other
-    ? `Ekip · ${data.assignee.name}`
-    : `${data.user.name} · ${data.user.role_label}`;
+    ? `Ekip · ${data.assignee.name}${data.assignee.title ? " · " + data.assignee.title : ""}`
+    : `${data.user.name}${data.user.title ? " · " + data.user.title : " · " + data.user.role_label}`;
   document.getElementById("btn-ekip").hidden = !data.can_manage;
   document.getElementById("week-range").textContent = data.week_range;
   document.getElementById("form-assign").hidden = !data.can_assign;
@@ -139,7 +139,7 @@ async function loadAgenda() {
     .join("") || empty("Henüz yok.");
   const select = document.getElementById("assign-target");
   select.innerHTML = [
-    ...data.members.map((m) => `<option value="user:${m.id}">${esc(m.name)} (${esc(m.role)})</option>`),
+    ...data.members.map((m) => `<option value="user:${m.id}">${esc(m.name)}${m.title ? " · " + esc(m.title) : ""} (${esc(m.role)})</option>`),
     ...data.groups.map((g) => `<option value="group:${g.id}">Grup: ${esc(g.name)}</option>`),
   ].join("");
   bindDrop();
@@ -154,8 +154,8 @@ async function loadEkip() {
   const people = data.people
     .map(
       (p) => `<a class="member-card" href="#" data-board="${p.id}">
-        <strong>${esc(p.name)}</strong><span class="role-tag">${esc(p.role)}</span>
-        <p class="member-stats">${esc(p.username)} · ${esc(p.email)}<br>
+        <strong>${esc(p.name)}</strong><span class="role-tag">${esc(p.title || "—")}</span>
+        <p class="member-stats">${esc(p.username)} · ${esc(p.role)}<br>
         Bugün ${p.stats.today} açık · ${p.stats.done_today} bitti · kuyruk ${p.stats.inbox} · kaçan ${p.stats.missed}</p>
       </a>`
     )
@@ -180,8 +180,8 @@ async function loadEkip() {
       <div class="team-list">${people}</div></section>
     <section class="panel"><h2>Kullanıcı ekle</h2>
       <form class="new-task" id="form-user">
-        <div class="field-row"><input name="username" placeholder="Kullanıcı adı" required /><input name="email" type="email" placeholder="E-posta" required /></div>
-        <div class="field-row"><input name="name" placeholder="İsim" required />
+        <div class="field-row"><input name="username" placeholder="Kullanıcı adı" required /><input name="name" placeholder="İsim" required /></div>
+        <div class="field-row"><input name="title" placeholder="Ünvan" required />
           <select name="role"><option value="worker">Worker</option><option value="admin">Admin</option></select>
         </div>
         <label>6 haneli PIN <input name="pin" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required /></label>
@@ -353,7 +353,7 @@ document.getElementById("view-ekip").addEventListener("submit", async (event) =>
     const data = await api("/api/ekip/users", { method: "POST", body });
     const box = document.getElementById("issued");
     box.hidden = false;
-    box.textContent = `kullanıcı: ${data.issued.username}\ne-posta: ${data.issued.email}\nşifre: ${data.issued.password}\nPIN: ${data.issued.pin}\nrol: ${data.issued.role}`;
+    box.textContent = `kullanıcı: ${data.issued.username}\nünvan: ${data.issued.title}\nşifre: ${data.issued.password}\nPIN: ${data.issued.pin}\nrol: ${data.issued.role}`;
     await loadEkip();
     document.getElementById("issued").hidden = false;
     document.getElementById("issued").textContent = box.textContent;
