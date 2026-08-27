@@ -33,7 +33,7 @@ function show(id) {
 }
 
 function card(task, check) {
-  const cls = `task focus-${task.focus || "medium"}${task.done ? " done" : ""}${task.kind === "assigned" ? " assigned" : ""}`;
+  const cls = `task focus-${task.priority || task.focus || "medium"}${task.done ? " done" : ""}${task.kind === "assigned" ? " assigned" : ""}${task.warning ? " warning" : ""}`;
   const drag = task.can_schedule ? `draggable="true"` : "";
   const mark = check && task.can_schedule
     ? `<button type="button" class="check-btn" data-act="toggle" data-id="${task.id}">${task.done ? "✓" : "○"}</button>`
@@ -43,10 +43,12 @@ function card(task, check) {
     : "";
   const chips = [
     task.kind === "assigned" ? `<span class="chip lock">Kurucu işi</span>` : `<span class="chip">Kişisel</span>`,
+    task.assignee_name ? `<span class="chip">${esc(task.assignee_name)}</span>` : "",
     task.deadline_date ? `<span class="chip">En geç ${task.deadline_date}${task.deadline_time ? " " + task.deadline_time : ""}</span>` : "",
     task.estimated_time ? `<span class="chip">${task.estimated_time}</span>` : "",
-    `<span class="chip">${task.focus_label || ""}</span>`,
+    `<span class="chip">Öncelik ${esc(task.priority_label || "")}</span>`,
     `<span class="chip">${task.comment_count || 0} açıklama</span>`,
+    task.warning ? `<span class="chip late">UYARI</span>` : "",
   ].join("");
   return `<article class="${cls}" ${drag} data-id="${task.id}">
     <div class="task-top">
@@ -75,6 +77,22 @@ function esc(value) {
 
 function empty(text) {
   return `<p class="empty">${esc(text)}</p>`;
+}
+
+function fillProducts(selected) {
+  document.querySelectorAll(".product-pick").forEach((el) => {
+    const current = selected || el.value;
+    el.innerHTML = [`<option value="">Ürün seç</option>`]
+      .concat((state.products || []).map((p) => `<option value="${esc(p.name)}" ${p.name === current ? "selected" : ""}>${esc(p.name)}</option>`))
+      .join("");
+  });
+}
+
+function hideViews() {
+  ["view-agenda", "view-ekip", "view-task", "view-products", "view-product"].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.hidden = true;
+  });
 }
 
 function bindDrop() {
@@ -114,16 +132,35 @@ async function loadAgenda() {
   if (state.boardUser) q.set("user_id", state.boardUser);
   const data = await api(`/api/agenda?${q}`);
   state.me = data.user;
+  state.products = data.products || [];
+  state.members = data.members || [];
   document.getElementById("eyebrow").textContent = data.viewing_other
-    ? `Ekip · ${data.assignee.name}${data.assignee.title ? " · " + data.assignee.title : ""}`
-    : `${data.user.name}${data.user.title ? " · " + data.user.title : " · " + data.user.role_label}`;
+    ? `${data.assignee.name}${data.assignee.title ? " · " + data.assignee.title : ""}`
+    : `${data.user.name}${data.user.title ? " · " + data.user.title : ""}`;
   document.getElementById("btn-ekip").hidden = !data.can_manage;
+  const boardWrap = document.getElementById("board-wrap");
+  const boardPick = document.getElementById("board-pick");
+  boardWrap.hidden = !data.members.length;
+  if (data.members.length) {
+    boardPick.innerHTML = data.members
+      .map(
+        (m) => `<option value="${m.id}" ${m.id === data.assignee.id ? "selected" : ""}>${esc(m.name)}${m.title ? " · " + esc(m.title) : ""}</option>`
+      )
+      .join("");
+  }
   document.getElementById("week-range").textContent = data.week_range;
   document.getElementById("form-assign").hidden = !data.can_assign;
+  fillProducts();
+  const peopleBox = document.getElementById("assign-people");
+  if (peopleBox) {
+    peopleBox.innerHTML = data.members
+      .map((m) => `<label class="check-line"><input type="checkbox" name="targets" value="${m.id}" ${data.viewing_other && m.id === data.assignee.id ? "checked" : ""}/> ${esc(m.name)}${m.title ? " · " + esc(m.title) : ""}</label>`)
+      .join("");
+  }
   document.getElementById("inbox-count").textContent = data.inbox.length;
   document.getElementById("missed-count").textContent = data.missed.length;
   document.getElementById("inbox-list").innerHTML = data.inbox.map((t) => card(t, false)).join("") || empty("Liste boş.");
-  document.getElementById("missed-list").innerHTML = data.missed.map((t) => card(t, false)).join("") || empty("Kaçırılan iş yok.");
+  document.getElementById("missed-list").innerHTML = data.missed.map((t) => card(t, false)).join("") || empty("Gecikmiş iş yok.");
   document.getElementById("week").innerHTML = data.days
     .map(
       (day) => `<section class="day${day.weekend ? " weekend" : ""}${day.today ? " today" : ""}${day.past ? " past" : ""}" data-drop="scheduled" data-date="${day.iso}">
@@ -140,15 +177,9 @@ async function loadAgenda() {
       </button>`
     )
     .join("") || empty("Henüz yok.");
-  const select = document.getElementById("assign-target");
-  select.innerHTML = [
-    ...data.members.map((m) => `<option value="user:${m.id}">${esc(m.name)}${m.title ? " · " + esc(m.title) : ""} (${esc(m.role)})</option>`),
-    ...data.groups.map((g) => `<option value="group:${g.id}">Grup: ${esc(g.name)}</option>`),
-  ].join("");
   bindDrop();
+  hideViews();
   document.getElementById("view-agenda").hidden = false;
-  document.getElementById("view-ekip").hidden = true;
-  document.getElementById("view-task").hidden = true;
   document.getElementById("week-nav").hidden = false;
 }
 
@@ -157,25 +188,10 @@ async function loadEkip() {
   const people = data.people
     .map(
       (p) => `<a class="member-card" href="#" data-board="${p.id}">
-        <strong>${esc(p.name)}</strong><span class="role-tag">${esc(p.title || "—")}</span>
-        <p class="member-stats">${esc(p.username)} · ${esc(p.role)}<br>
+        <strong>${esc(p.name)}</strong><span class="role-tag">${esc(p.title || p.role_label || "")}</span>
+        <p class="member-stats">${esc(p.username)}<br>
         Bugün ${p.stats.today} açık · ${p.stats.done_today} bitti · kuyruk ${p.stats.inbox} · kaçan ${p.stats.missed}</p>
       </a>`
-    )
-    .join("");
-  const checks = (ids) =>
-    data.people
-      .map(
-        (p) => `<label class="check-line"><input type="checkbox" name="member_id" value="${p.id}" ${ids.includes(p.id) ? "checked" : ""}/> ${esc(p.name)}</label>`
-      )
-      .join("");
-  const groups = data.groups
-    .map(
-      (g) => `<form class="new-task group-edit" data-group="${g.id}">
-        <input name="name" value="${esc(g.name)}" required />
-        <div class="member-picks">${checks(g.member_ids)}</div>
-        <button class="secondary" type="submit">Grubu kaydet</button>
-      </form>`
     )
     .join("");
   document.getElementById("view-ekip").innerHTML = `
@@ -190,17 +206,8 @@ async function loadEkip() {
         <button class="primary" type="submit">Oluştur</button>
       </form>
       <pre class="key-banner" id="issued" hidden></pre>
-    </section>
-    <section class="panel"><h2>Gruplar</h2>
-      <form class="new-task" id="form-group">
-        <input name="name" placeholder="Grup adı" required />
-        <div class="member-picks">${checks([])}</div>
-        <button class="primary" type="submit">Grup kur</button>
-      </form>
-      ${groups}
     </section>`;
-  document.getElementById("view-agenda").hidden = true;
-  document.getElementById("view-task").hidden = true;
+  hideViews();
   document.getElementById("view-ekip").hidden = false;
   document.getElementById("week-nav").hidden = true;
 }
@@ -208,11 +215,9 @@ async function loadEkip() {
 async function loadTask(id) {
   const data = await api(`/api/tasks/${id}`);
   const t = data.task;
-  const assigned = t.group_name
-    ? `Grup: ${t.group_name}`
-    : t.assignee_name
-      ? `${t.assignee_name}${t.assignee_title ? " · " + t.assignee_title : ""}`
-      : "Atanmamış";
+  const assigned = t.assignee_name
+    ? `${t.assignee_name}${t.assignee_title ? " · " + t.assignee_title : ""}`
+    : "Atanmamış";
   const comments = data.comments
     .map(
       (c) => `<article class="comment">
@@ -225,25 +230,20 @@ async function loadTask(id) {
       </article>`
     )
     .join("") || empty("Açıklama yok.");
-  const dist = data.group && data.can_assign
-    ? `<section class="panel"><h2>Gruba dağıt</h2>
-        <form id="form-dist" class="new-task">${data.group.members
-          .map((m) => `<label class="check-line"><input type="checkbox" name="member_id" value="${m.id}" checked /> ${esc(m.name)}</label>`)
-          .join("")}<button class="primary" type="submit">Dağıt</button></form></section>`
-    : "";
-  const focusOpts = ["low", "medium", "high"]
-    .map((key) => `<option value="${key}" ${t.focus === key ? "selected" : ""}>${esc({ low: "Düşük", medium: "Orta", high: "Yüksek" }[key])}</option>`)
+  const priorityOpts = ["low", "medium", "high"]
+    .map((key) => `<option value="${key}" ${(t.priority || t.focus) === key ? "selected" : ""}>${esc({ low: "Düşük", medium: "Orta", high: "Yüksek" }[key])}</option>`)
     .join("");
-  const targetOpts = [
-    `<option value="">Atama: ${esc(assigned)}</option>`,
-    ...data.members.map((m) => `<option value="user:${m.id}" ${t.target === "user:" + m.id ? "selected" : ""}>${esc(m.name)}${m.title ? " · " + esc(m.title) : ""}</option>`),
-    ...data.groups.map((g) => `<option value="group:${g.id}" ${t.target === "group:" + g.id ? "selected" : ""}>Grup: ${esc(g.name)}</option>`),
-  ].join("");
+  const productOpts = [`<option value="">Ürün seç</option>`]
+    .concat((data.products || []).map((p) => `<option value="${esc(p.name)}" ${t.project === p.name ? "selected" : ""}>${esc(p.name)}</option>`))
+    .join("");
+  const peopleChecks = (data.members || [])
+    .map((m) => `<label class="check-line"><input type="checkbox" name="targets" value="${m.id}" ${t.assignee_id === m.id ? "checked" : ""}/> ${esc(m.name)}${m.title ? " · " + esc(m.title) : ""}</label>`)
+    .join("");
   const fields = t.can_edit
     ? `<form id="form-edit" class="new-task" data-id="${t.id}">
         <div class="field-row">
           <label>Başlık <input name="title" required value="${esc(t.title)}" /></label>
-          <label>Proje <input name="project" value="${esc(t.project || "")}" /></label>
+          <label>Ürün <select name="project">${productOpts}</select></label>
         </div>
         <label>Açıklama <textarea name="description" rows="3">${esc(t.description || "")}</textarea></label>
         <div class="field-row">
@@ -252,17 +252,17 @@ async function loadTask(id) {
         </div>
         <div class="field-row">
           <label>Süre <input name="estimated_time" value="${esc(t.estimated_time || "")}" /></label>
-          <label>Odak <select name="focus">${focusOpts}</select></label>
+          <label>Öncelik <select name="priority">${priorityOpts}</select></label>
         </div>
-        ${data.can_assign ? `<label>Kişi / grup <select name="target">${targetOpts}</select></label>` : ""}
+        ${data.can_assign ? `<p class="form-kicker">Kişiler</p><div class="member-picks">${peopleChecks}</div>` : ""}
         <button class="primary" type="submit">Kaydet</button>
       </form>`
     : `<div class="info-grid">
-        <p><span>Proje</span>${esc(t.project || "—")}</p>
+        <p><span>Ürün</span>${esc(t.project || "—")}</p>
         <p><span>Açıklama</span>${esc(t.description || "—")}</p>
         <p><span>En geç</span>${esc(t.deadline_date || "—")}${t.deadline_time ? " " + esc(t.deadline_time) : ""}</p>
         <p><span>Süre</span>${esc(t.estimated_time || "—")}</p>
-        <p><span>Odak</span>${esc(t.focus_label || "—")}</p>
+        <p><span>Öncelik</span>${esc(t.priority_label || "—")}</p>
         <p><span>Atanan</span>${esc(assigned)}</p>
       </div>`;
   document.getElementById("view-task").innerHTML = `
@@ -270,6 +270,7 @@ async function loadTask(id) {
     <h1>${esc(t.title)}</h1>
     <div class="meta">
       <span class="chip">${t.kind === "assigned" ? "Kurucu işi" : "Kişisel"}</span>
+      ${t.warning ? `<span class="chip late">UYARI</span>` : ""}
       ${t.can_edit ? "" : `<span class="chip">Salt okunur</span>`}
     </div>
     <section class="panel">
@@ -277,7 +278,6 @@ async function loadTask(id) {
       ${t.can_edit ? "" : `<p class="hint">Alanları değiştiremezsin. Açıklama ekleyebilir, kendi eklediklerini silebilirsin.</p>`}
       ${fields}
     </section>
-    ${dist}
     <section class="panel"><h2>Ek açıklamalar</h2>
       <div class="comment-list">${comments}</div>
       <form id="form-comment" class="new-task" data-id="${t.id}">
@@ -285,15 +285,58 @@ async function loadTask(id) {
         <button class="primary" type="submit">Açıklama ekle</button>
       </form>
     </section>`;
-  document.getElementById("view-agenda").hidden = true;
-  document.getElementById("view-ekip").hidden = true;
+  hideViews();
   document.getElementById("view-task").hidden = false;
+  document.getElementById("week-nav").hidden = true;
+}
+
+async function loadProducts() {
+  const data = await api("/api/products");
+  const cards = data.products
+    .map(
+      (p) => `<a class="member-card" href="#" data-product="${p.id}">
+        <strong>${esc(p.name)}</strong><span class="role-tag">${p.active_count} açık iş</span>
+        <p class="member-stats">${p.people.length ? p.people.map((u) => esc(u.name)).join(", ") : "Aktif görev yok"}</p>
+      </a>`
+    )
+    .join("") || empty("Henüz ürün yok.");
+  document.getElementById("view-products").innerHTML = `
+    <section class="panel"><div class="panel-head"><h2>Ürünler</h2><span class="count">${data.products.length}</span></div>
+      <p class="hint">Ürüne girince o ürüne atanmış görevler görünür.</p>
+      <div class="team-list">${cards}</div></section>
+    ${data.can_add ? `<section class="panel"><h2>Ürün ekle</h2>
+      <form class="new-task" id="form-product"><input name="name" placeholder="Ürün adı" required />
+      <button class="primary" type="submit">Ekle</button></form></section>` : ""}`;
+  hideViews();
+  document.getElementById("view-products").hidden = false;
+  document.getElementById("week-nav").hidden = true;
+}
+
+async function loadProduct(id) {
+  const data = await api(`/api/products/${id}`);
+  const p = data.product;
+  const people = (p.people || [])
+    .map((u) => `${esc(u.name)} (${u.open_tasks})`)
+    .join(" · ") || "Aktif görev yok";
+  document.getElementById("view-product").innerHTML = `
+    <p class="eyebrow"><button type="button" class="text-btn" data-go="products">← Ürünler</button></p>
+    <h1>${esc(p.name)}</h1>
+    <p class="hint">Aktif çalışanlar: ${people}</p>
+    <section class="panel"><div class="panel-head"><h2>Görevler</h2><span class="count">${data.tasks.length}</span></div>
+      <div class="card-list">${data.tasks.map((t) => card(t, false)).join("") || empty("Bu üründe iş yok.")}</div>
+    </section>`;
+  hideViews();
+  document.getElementById("view-product").hidden = false;
   document.getElementById("week-nav").hidden = true;
 }
 
 function formFields(form) {
   const d = new FormData(form);
   return Object.fromEntries(d.entries());
+}
+
+function checkedValues(form, name) {
+  return [...form.querySelectorAll(`[name="${name}"]:checked`)].map((el) => el.value);
 }
 
 document.getElementById("login-form").onsubmit = async (event) => {
@@ -342,12 +385,18 @@ document.body.addEventListener("click", async (event) => {
       await loadAgenda();
     }
     if (go.dataset.go === "ekip") await loadEkip();
+    if (go.dataset.go === "products") await loadProducts();
   }
   const board = event.target.closest("[data-board]");
   if (board) {
     event.preventDefault();
     state.boardUser = board.dataset.board;
     await loadAgenda();
+  }
+  const product = event.target.closest("[data-product]");
+  if (product) {
+    event.preventDefault();
+    await loadProduct(product.dataset.product);
   }
   const act = event.target.closest("[data-act]");
   if (!act) return;
@@ -381,6 +430,7 @@ document.getElementById("form-assign").onsubmit = async (event) => {
   event.preventDefault();
   const body = formFields(event.target);
   body.kind = "assigned";
+  body.targets = checkedValues(event.target, "targets");
   await api("/api/tasks", { method: "POST", body });
   event.target.reset();
   await loadAgenda();
@@ -398,25 +448,13 @@ document.getElementById("view-ekip").addEventListener("submit", async (event) =>
     document.getElementById("issued").hidden = false;
     document.getElementById("issued").textContent = box.textContent;
   }
-  if (event.target.id === "form-group") {
-    const member_ids = [...event.target.querySelectorAll("[name=member_id]:checked")].map((el) => el.value);
-    await api("/api/ekip/groups", { method: "POST", body: { name: event.target.name.value, member_ids } });
-    await loadEkip();
-  }
-  if (event.target.dataset.group) {
-    const member_ids = [...event.target.querySelectorAll("[name=member_id]:checked")].map((el) => el.value);
-    await api(`/api/ekip/groups/${event.target.dataset.group}`, {
-      method: "POST",
-      body: { name: event.target.name.value, member_ids },
-    });
-    await loadEkip();
-  }
 });
 
 document.getElementById("view-task").addEventListener("submit", async (event) => {
   event.preventDefault();
   if (event.target.id === "form-edit") {
     const body = formFields(event.target);
+    body.targets = checkedValues(event.target, "targets");
     await api(`/api/tasks/${event.target.dataset.id}`, { method: "POST", body });
     await loadTask(event.target.dataset.id);
   }
@@ -427,14 +465,21 @@ document.getElementById("view-task").addEventListener("submit", async (event) =>
     });
     await loadTask(event.target.dataset.id);
   }
-  if (event.target.id === "form-dist") {
-    const member_ids = [...event.target.querySelectorAll("[name=member_id]:checked")].map((el) => el.value);
-    const id = document.querySelector("#form-comment").dataset.id;
-    await api(`/api/tasks/${id}/distribute`, { method: "POST", body: { member_ids } });
-    state.boardUser = "";
-    await loadAgenda();
+});
+
+document.getElementById("view-products").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  if (event.target.id === "form-product") {
+    await api("/api/products", { method: "POST", body: formFields(event.target) });
+    await loadProducts();
   }
 });
+
+document.getElementById("board-pick").onchange = async (event) => {
+  const id = event.target.value || "";
+  state.boardUser = state.me && id === state.me.id ? "" : id;
+  await loadAgenda();
+};
 
 (async function boot() {
   if (!state.token) {

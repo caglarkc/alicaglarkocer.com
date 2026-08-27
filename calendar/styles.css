@@ -152,7 +152,14 @@ h1 {
 
 .missed-panel {
   flex: 0.8;
-  background: var(--missed);
+  background: #f8d7d0;
+  border-color: #c44b3c;
+}
+
+.task.warning {
+  border-color: #b42318;
+  background: #fff1ee;
+  box-shadow: 0 0 0 1px #b42318;
 }
 
 .panel.drag-over {
@@ -478,6 +485,25 @@ h2 {
   gap: 12px;
   margin-top: 10px;
   font-family: "Segoe UI", system-ui, sans-serif;
+  font-size: 13px;
+}
+
+.board-pick {
+  display: grid;
+  gap: 4px;
+  margin-top: 10px;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.board-pick select {
+  min-width: 220px;
+  padding: 6px 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
   font-size: 13px;
 }
 

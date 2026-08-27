@@ -32,9 +32,13 @@
         <h1>Ajanda</h1>
         <nav class="top-nav">
           <button type="button" class="text-btn" data-go="agenda">Ajandam</button>
+          <button type="button" class="text-btn" data-go="products">Ürünler</button>
           <button type="button" class="text-btn" id="btn-ekip" hidden data-go="ekip">Ekip</button>
           <button type="button" class="text-btn" id="btn-logout">Çıkış</button>
         </nav>
+        <label class="board-pick" id="board-wrap" hidden>Ajanda
+          <select id="board-pick"></select>
+        </label>
       </div>
       <div class="week-nav" id="week-nav">
         <button type="button" class="icon-btn" id="prev-week">‹</button>
@@ -55,7 +59,7 @@
             <p class="form-kicker">Kendi işim</p>
             <div class="field-row">
               <input name="title" placeholder="İş başlığı" required />
-              <input name="project" placeholder="Proje adı" />
+              <select name="project" class="product-pick"><option value="">Ürün seç</option></select>
             </div>
             <textarea name="description" rows="2" placeholder="Açıklama"></textarea>
             <div class="field-row">
@@ -64,8 +68,8 @@
             </div>
             <div class="field-row">
               <label>Süre <input name="estimated_time" placeholder="45 dk" /></label>
-              <label>Odak
-                <select name="focus">
+              <label>Öncelik
+                <select name="priority">
                   <option value="low">Düşük</option>
                   <option value="medium" selected>Orta</option>
                   <option value="high">Yüksek</option>
@@ -78,18 +82,19 @@
             <p class="form-kicker">Kurucu işi — başkası değiştiremez</p>
             <div class="field-row">
               <input name="title" placeholder="İş başlığı" required />
-              <input name="project" placeholder="Proje adı" />
+              <select name="project" class="product-pick"><option value="">Ürün seç</option></select>
             </div>
             <textarea name="description" rows="2" placeholder="Açıklama"></textarea>
-            <label>Kime / grup <select name="target" id="assign-target"></select></label>
+            <p class="form-kicker">Kişiler (çoklu)</p>
+            <div class="member-picks" id="assign-people"></div>
             <div class="field-row">
               <label>En geç <input type="date" name="deadline_date" /></label>
               <label>Saat <input type="time" name="deadline_time" /></label>
             </div>
             <div class="field-row">
               <label>Süre <input name="estimated_time" placeholder="45 dk" /></label>
-              <label>Odak
-                <select name="focus">
+              <label>Öncelik
+                <select name="priority">
                   <option value="low">Düşük</option>
                   <option value="medium" selected>Orta</option>
                   <option value="high">Yüksek</option>
@@ -101,8 +106,8 @@
           <div class="card-list" id="inbox-list"></div>
         </section>
         <section class="panel missed-panel" data-drop="missed">
-          <div class="panel-head"><h2>Yapılmadı</h2><span class="count" id="missed-count">0</span></div>
-          <p class="hint">Günü geçmiş, işaretlenmemiş işler.</p>
+          <div class="panel-head"><h2>Tamamlanmadı</h2><span class="count" id="missed-count">0</span></div>
+          <p class="hint">Son günü geçen işler. Kırmızı uyarı.</p>
           <div class="card-list" id="missed-list"></div>
         </section>
       </aside>
@@ -116,6 +121,8 @@
     </div>
 
     <div id="view-ekip" class="team-page" hidden></div>
+    <div id="view-products" class="team-page" hidden></div>
+    <div id="view-product" class="task-page" hidden></div>
     <div id="view-task" class="task-page" hidden></div>
   </div>
 
