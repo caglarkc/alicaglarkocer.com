@@ -505,7 +505,7 @@ async function loadProduct(id) {
   document.getElementById("view-product").innerHTML = `
     <p class="eyebrow"><button type="button" class="text-btn" data-go="products">← Ürünler</button></p>
     <h1>${esc(p.name)}</h1>
-    ${phaseView(p)}
+    ${data.can_edit ? "" : phaseView(p)}
     ${edit}
     <section class="panel">
       <div class="panel-head"><h2>${esc(data.note_heading || "Faz Notu")}</h2><span class="count">${(data.notes || []).length}</span></div>
@@ -666,8 +666,16 @@ document.getElementById("view-task").addEventListener("submit", async (event) =>
   if (event.target.id === "form-edit") {
     const body = formFields(event.target);
     body.targets = checkedValues(event.target, "targets");
-    await api(`/api/tasks/${event.target.dataset.id}`, { method: "POST", body });
-    await loadTask(event.target.dataset.id);
+    try {
+      const data = await api(`/api/tasks/${event.target.dataset.id}`, { method: "POST", body });
+      if (data.deleted) {
+        await loadAgenda();
+        return;
+      }
+      await loadTask(event.target.dataset.id);
+    } catch (e) {
+      alert(e.message);
+    }
   }
   if (event.target.id === "form-comment") {
     await api(`/api/tasks/${event.target.dataset.id}/comment`, {

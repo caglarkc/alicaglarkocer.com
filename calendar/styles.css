@@ -128,11 +128,18 @@ h1 {
   min-height: calc(100vh - 97px);
 }
 
+.layout[hidden] {
+  display: none !important;
+}
+
 .rail {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  min-height: 0;
+  max-height: calc(100vh - 97px);
   padding: 18px 16px 24px 28px;
+  overflow: auto;
   border-right: 1px solid var(--line);
 }
 
@@ -151,7 +158,10 @@ h1 {
 }
 
 .missed-panel {
-  flex: 0.8;
+  flex: 0 1 auto;
+  min-height: 160px;
+  max-height: 42vh;
+  overflow: auto;
   background: #f8d7d0;
   border-color: #c44b3c;
 }
@@ -609,11 +619,14 @@ a.icon-btn {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
   margin: 0 0 16px;
+  width: 100%;
+  min-width: 0;
 }
 
 .phase-board .member-picks,
 .phase-board .phase-track {
   margin: 4px 0 0;
+  max-height: 200px;
 }
 
 .phase-board .empty {
@@ -831,6 +844,18 @@ a.icon-btn {
   padding: 24px 28px 48px;
   display: grid;
   gap: 16px;
+}
+
+.product-page {
+  max-width: 960px;
+  padding: 24px 28px 48px;
+  display: grid;
+  gap: 16px;
+  overflow-x: hidden;
+}
+
+.product-page h1 {
+  font-size: 28px;
 }
 
 .task-page h1 {
