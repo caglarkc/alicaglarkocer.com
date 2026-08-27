@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <title>Ajanda — ACK Techs</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main id="screen-login" class="screen login-wrap">
+    <form id="login-form" class="login-card new-task">
+      <p class="eyebrow">ACK Techs</p>
+      <h1>Ajanda</h1>
+      <p class="hint">Ekip ajandası. Veri sunucuda; giriş gerekli.</p>
+      <p class="hint"><a class="text-btn" href="/">← Siteye dön</a></p>
+      <label>Kullanıcı adı veya e-posta
+        <input name="identifier" required autocomplete="username" />
+      </label>
+      <label>Şifre
+        <input name="password" type="password" required autocomplete="current-password" />
+      </label>
+      <p class="form-error" id="login-error" hidden></p>
+      <button type="submit" class="primary">Devam</button>
+    </form>
+  </main>
+
+  <main id="screen-pin" class="screen login-wrap" hidden>
+    <form id="pin-form" class="login-card new-task">
+      <p class="eyebrow">Güvenlik</p>
+      <h1 id="pin-title">PIN</h1>
+      <p class="hint" id="pin-hint">6 haneli PIN</p>
+      <label>PIN
+        <input name="pin" type="password" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required />
+      </label>
+      <label id="pin2-wrap" hidden>PIN tekrar
+        <input name="pin2" type="password" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" />
+      </label>
+      <p class="form-error" id="pin-error" hidden></p>
+      <button type="submit" class="primary">Giriş</button>
+    </form>
+  </main>
+
+  <div id="screen-app" class="screen" hidden>
+    <header class="top">
+      <div class="top-title">
+        <p class="eyebrow" id="eyebrow"></p>
+        <h1>Ajanda</h1>
+        <nav class="top-nav">
+          <button type="button" class="text-btn" data-go="agenda">Ajandam</button>
+          <button type="button" class="text-btn" id="btn-ekip" hidden data-go="ekip">Ekip</button>
+          <button type="button" class="text-btn" id="btn-logout">Çıkış</button>
+        </nav>
+      </div>
+      <div class="week-nav" id="week-nav">
+        <button type="button" class="icon-btn" id="prev-week">‹</button>
+        <div class="week-label">
+          <strong id="week-range"></strong>
+          <button type="button" class="text-btn" id="this-week">Bu hafta</button>
+        </div>
+        <button type="button" class="icon-btn" id="next-week">›</button>
+      </div>
+    </header>
+
+    <div id="view-agenda" class="layout">
+      <aside class="rail">
+        <section class="panel inbox-panel" data-drop="inbox">
+          <div class="panel-head"><h2>Kısa vadeli</h2><span class="count" id="inbox-count">0</span></div>
+          <p class="hint">Güne atamak için kartı sürükle.</p>
+          <form id="form-personal" class="new-task">
+            <p class="form-kicker">Kendi işim</p>
+            <div class="field-row">
+              <input name="title" placeholder="İş başlığı" required />
+              <input name="project" placeholder="Proje adı" />
+            </div>
+            <textarea name="description" rows="2" placeholder="Açıklama"></textarea>
+            <div class="field-row">
+              <label>En geç <input type="date" name="deadline_date" /></label>
+              <label>Saat <input type="time" name="deadline_time" /></label>
+            </div>
+            <div class="field-row">
+              <label>Süre <input name="estimated_time" placeholder="45 dk" /></label>
+              <label>Odak
+                <select name="focus">
+                  <option value="low">Düşük</option>
+                  <option value="medium" selected>Orta</option>
+                  <option value="high">Yüksek</option>
+                </select>
+              </label>
+            </div>
+            <button class="primary" type="submit">Kişisel iş ekle</button>
+          </form>
+          <form id="form-assign" class="new-task assign-form" hidden>
+            <p class="form-kicker">Kurucu işi — başkası değiştiremez</p>
+            <div class="field-row">
+              <input name="title" placeholder="İş başlığı" required />
+              <input name="project" placeholder="Proje adı" />
+            </div>
+            <textarea name="description" rows="2" placeholder="Açıklama"></textarea>
+            <label>Kime / grup <select name="target" id="assign-target"></select></label>
+            <div class="field-row">
+              <label>En geç <input type="date" name="deadline_date" /></label>
+              <label>Saat <input type="time" name="deadline_time" /></label>
+            </div>
+            <div class="field-row">
+              <label>Süre <input name="estimated_time" placeholder="45 dk" /></label>
+              <label>Odak
+                <select name="focus">
+                  <option value="low">Düşük</option>
+                  <option value="medium" selected>Orta</option>
+                  <option value="high">Yüksek</option>
+                </select>
+              </label>
+            </div>
+            <button class="primary" type="submit">Ata</button>
+          </form>
+          <div class="card-list" id="inbox-list"></div>
+        </section>
+        <section class="panel missed-panel" data-drop="missed">
+          <div class="panel-head"><h2>Yapılmadı</h2><span class="count" id="missed-count">0</span></div>
+          <p class="hint">Günü geçmiş, işaretlenmemiş işler.</p>
+          <div class="card-list" id="missed-list"></div>
+        </section>
+      </aside>
+      <section class="week" id="week"></section>
+      <aside class="done-rail">
+        <section class="panel done-panel">
+          <div class="panel-head"><h2>Son tamamlanan</h2></div>
+          <div class="card-list" id="done-list"></div>
+        </section>
+      </aside>
+    </div>
+
+    <div id="view-ekip" class="team-page" hidden></div>
+    <div id="view-task" class="task-page" hidden></div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

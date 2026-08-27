@@ -1,0 +1,14 @@
+{
+  "headers": [
+    {
+      "source": "/calendar/api/(.*)",
+      "headers": [{ "key": "Cache-Control", "value": "no-store" }]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/calendar/api/:path*",
+      "destination": "http://167.235.158.118/ajanda/api/:path*"
+    }
+  ]
+}
