@@ -36,6 +36,11 @@ body {
   background: var(--paper);
   color: var(--ink);
   letter-spacing: 0.01em;
+  overflow-x: hidden;
+}
+
+#screen-app {
+  overflow-x: hidden;
 }
 
 button,
@@ -609,28 +614,83 @@ a.icon-btn {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin: 0 0 16px;
+  margin: 4px 0 0;
   padding: 0;
   list-style: none;
 }
 
-.phase-board {
+.phase-view {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-  margin: 0 0 16px;
-  width: 100%;
+  gap: 12px;
   min-width: 0;
 }
 
-.phase-board .member-picks,
-.phase-board .phase-track {
-  margin: 4px 0 0;
-  max-height: 200px;
+.phase-view .empty {
+  margin: 8px 0 0;
 }
 
-.phase-board .empty {
-  margin: 8px 0 0;
+.phase-board {
+  display: grid;
+  gap: 0;
+  margin: 0 0 8px;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+}
+
+.phase-head,
+.phase-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(64px, 0.7fr));
+  align-items: center;
+  gap: 4px 6px;
+  padding: 7px 10px;
+}
+
+.phase-head {
+  background: var(--paper);
+  font-family: "Segoe UI", system-ui, sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.phase-row + .phase-row {
+  border-top: 1px solid var(--line);
+}
+
+.phase-head span {
+  min-width: 0;
+  line-height: 1.2;
+  text-align: center;
+  white-space: normal;
+}
+
+.phase-head span:first-child,
+.phase-row span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+}
+
+.phase-row label,
+.phase-head span:not(:first-child) {
+  display: flex;
+  justify-content: center;
+  margin: 0;
+}
+
+.phase-row input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--accent);
 }
 
 .phase-track li {
@@ -847,11 +907,26 @@ a.icon-btn {
 }
 
 .product-page {
-  max-width: 960px;
+  max-width: 1080px;
+  width: 100%;
   padding: 24px 28px 48px;
   display: grid;
   gap: 16px;
+  min-width: 0;
   overflow-x: hidden;
+}
+
+.products-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+@media (min-width: 960px) {
+  .products-split {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  }
 }
 
 .product-page h1 {
@@ -986,8 +1061,10 @@ a.icon-btn {
     grid-template-columns: 1fr;
   }
 
-  .phase-board {
-    grid-template-columns: 1fr;
+  .phase-head,
+  .phase-row {
+    grid-template-columns: minmax(0, 1fr) repeat(3, 56px);
+    padding: 6px 8px;
   }
 
   .rail,

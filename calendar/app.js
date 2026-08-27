@@ -102,23 +102,23 @@ function phaseIds(list) {
   return (list || []).map((p) => (p && p.id) || p);
 }
 
-function phaseChecks(phases, name, selected, type) {
-  const picked = new Set(Array.isArray(selected) ? selected : selected ? [selected] : []);
-  return (phases || [])
+function phaseBoard(phases, product) {
+  const done = new Set(phaseIds(product.done_phases));
+  const upcoming = new Set(phaseIds(product.upcoming_phases));
+  const current = product.phase || "";
+  const rows = (phases || [])
     .map(
-      (p) =>
-        `<label class="check-line"><input type="${type}" name="${name}" value="${p.id}" ${picked.has(p.id) ? "checked" : ""}/> <span>${esc(p.label)}</span></label>`
+      (p) => `<div class="phase-row">
+        <span>${esc(p.label)}</span>
+        <label><input type="checkbox" name="done_phases" value="${p.id}" ${done.has(p.id) ? "checked" : ""}/></label>
+        <label><input type="radio" name="phase" value="${p.id}" ${current === p.id ? "checked" : ""}/></label>
+        <label><input type="checkbox" name="upcoming_phases" value="${p.id}" ${upcoming.has(p.id) ? "checked" : ""}/></label>
+      </div>`
     )
     .join("");
-}
-
-function phaseBoard(phases, product) {
-  const done = phaseIds(product.done_phases);
-  const upcoming = phaseIds(product.upcoming_phases);
   return `<div class="phase-board">
-    <div><p class="form-kicker">Tamamlanan</p><div class="member-picks">${phaseChecks(phases, "done_phases", done, "checkbox")}</div></div>
-    <div><p class="form-kicker">Şu anki</p><div class="member-picks">${phaseChecks(phases, "phase", product.phase, "radio")}</div></div>
-    <div><p class="form-kicker">Gelecek</p><div class="member-picks">${phaseChecks(phases, "upcoming_phases", upcoming, "checkbox")}</div></div>
+    <div class="phase-head"><span>Faz</span><span>Bitti</span><span>Şu an</span><span>Sonra</span></div>
+    ${rows}
   </div>`;
 }
 
@@ -127,7 +127,7 @@ function phaseView(product) {
     (items || []).length
       ? `<ol class="phase-track">${items.map((p) => `<li class="is-on">${esc(p.label)}</li>`).join("")}</ol>`
       : `<p class="empty">—</p>`;
-  return `<div class="phase-board">
+  return `<div class="phase-view">
     <div><p class="form-kicker">Tamamlanan</p>${chips(product.done_phases)}</div>
     <div><p class="form-kicker">Şu anki</p>${chips(product.phase_label ? [{ label: product.phase_label }] : [])}</div>
     <div><p class="form-kicker">Gelecek</p>${chips(product.upcoming_phases)}</div>
@@ -433,19 +433,21 @@ async function loadProducts() {
     ? `<p class="form-kicker">Görevliler</p><div class="member-picks">${memberChecks(data.people, [])}</div>`
     : "";
   document.getElementById("view-products").innerHTML = `
-    <section class="panel"><div class="panel-head"><h2>Ürünler</h2><span class="count">${data.products.length}</span></div>
-      <p class="hint">Ürüne girince fazı, amacı, teknolojileri, görevliler ve görev geçmişi görünür.</p>
-      <div class="team-list">${cards}</div></section>
-    ${data.can_add ? `<section class="panel"><h2>Ürün ekle</h2>
-      <form class="new-task" id="form-product">
-        <input name="name" placeholder="Ürün adı" required />
-        ${phaseBoard(data.phases, { phase: "planning", done_phases: [], upcoming_phases: (data.phases || []).filter((p) => p.id !== "planning") })}
-        <textarea name="problem" rows="2" placeholder="Çözdüğü sorun"></textarea>
-        <textarea name="purpose" rows="2" placeholder="Kısaca amacı"></textarea>
-        <input name="tech" placeholder="Kullanılan teknolojiler" />
-        ${peopleBox}
-        <button class="primary" type="submit">Ekle</button>
-      </form></section>` : ""}`;
+    <div class="products-split">
+      <section class="panel"><div class="panel-head"><h2>Ürünler</h2><span class="count">${data.products.length}</span></div>
+        <p class="hint">Ürüne girince fazı, amacı, teknolojileri, görevliler ve görev geçmişi görünür.</p>
+        <div class="team-list">${cards}</div></section>
+      ${data.can_add ? `<section class="panel"><h2>Ürün ekle</h2>
+        <form class="new-task" id="form-product">
+          <input name="name" placeholder="Ürün adı" required />
+          ${phaseBoard(data.phases, { phase: "planning", done_phases: [], upcoming_phases: (data.phases || []).filter((p) => p.id !== "planning") })}
+          <textarea name="problem" rows="2" placeholder="Çözdüğü sorun"></textarea>
+          <textarea name="purpose" rows="2" placeholder="Kısaca amacı"></textarea>
+          <input name="tech" placeholder="Kullanılan teknolojiler" />
+          ${peopleBox}
+          <button class="primary" type="submit">Ekle</button>
+        </form></section>` : ""}
+    </div>`;
   hideViews();
   document.getElementById("view-products").hidden = false;
   document.getElementById("week-nav").hidden = true;
