@@ -694,6 +694,21 @@ a.icon-btn {
   color: var(--muted);
 }
 
+.crew-list {
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+
+.crew-list li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 8px;
+  align-items: baseline;
+}
+
 .form-kicker {
   margin: 0;
   font-family: "Segoe UI", system-ui, sans-serif;

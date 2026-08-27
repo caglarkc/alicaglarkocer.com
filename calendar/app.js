@@ -79,6 +79,17 @@ function empty(text) {
   return `<p class="empty">${esc(text)}</p>`;
 }
 
+function memberChecks(people, selectedIds) {
+  const selected = new Set(selectedIds || []);
+  return (people || [])
+    .map((m) => `<label class="check-line"><input type="checkbox" name="member_ids" value="${m.id}" ${selected.has(m.id) ? "checked" : ""}/> <span>${esc(m.name)}</span></label>`)
+    .join("");
+}
+
+function crewNames(members) {
+  return (members || []).map((u) => u.name).join(", ") || "Görevli yok";
+}
+
 function fillProducts(selected) {
   document.querySelectorAll(".product-pick").forEach((el) => {
     const current = selected || el.value;
@@ -304,13 +315,16 @@ async function loadProducts() {
     .map(
       (p) => `<a class="member-card" href="#" data-product="${p.id}">
         <strong>${esc(p.name)}</strong><span class="role-tag">${p.active_count} açık iş</span>
-        <p class="member-stats">${esc(p.purpose || p.problem || (p.people.length ? p.people.map((u) => u.name).join(", ") : "Aktif görev yok"))}</p>
+        <p class="member-stats">${p.purpose ? `${esc(p.purpose)}<br>` : ""}Görevliler: ${esc(crewNames(p.members))}</p>
       </a>`
     )
     .join("") || empty("Henüz ürün yok.");
+  const peopleBox = data.can_add
+    ? `<p class="form-kicker">Görevliler</p><div class="member-picks">${memberChecks(data.people, [])}</div>`
+    : "";
   document.getElementById("view-products").innerHTML = `
     <section class="panel"><div class="panel-head"><h2>Ürünler</h2><span class="count">${data.products.length}</span></div>
-      <p class="hint">Ürüne girince amacı, teknolojileri ve görev geçmişi görünür.</p>
+      <p class="hint">Ürüne girince amacı, teknolojileri, görevliler ve görev geçmişi görünür.</p>
       <div class="team-list">${cards}</div></section>
     ${data.can_add ? `<section class="panel"><h2>Ürün ekle</h2>
       <form class="new-task" id="form-product">
@@ -318,6 +332,7 @@ async function loadProducts() {
         <textarea name="problem" rows="2" placeholder="Çözdüğü sorun"></textarea>
         <textarea name="purpose" rows="2" placeholder="Kısaca amacı"></textarea>
         <input name="tech" placeholder="Kullanılan teknolojiler" />
+        ${peopleBox}
         <button class="primary" type="submit">Ekle</button>
       </form></section>` : ""}`;
   hideViews();
@@ -329,9 +344,12 @@ async function loadProducts() {
 async function loadProduct(id) {
   const data = await api(`/api/products/${id}`);
   const p = data.product;
-  const people = (p.people || [])
-    .map((u) => `${esc(u.name)} (${u.open_tasks})`)
-    .join(" · ") || "Aktif görev yok";
+  const crew = (p.members || [])
+    .map((u) => {
+      const open = (p.people || []).find((x) => x.id === u.id);
+      return `<li><strong>${esc(u.name)}</strong>${u.title ? ` <span class="muted">${esc(u.title)}</span>` : ""}${open ? ` <span class="muted">· ${open.open_tasks} açık iş</span>` : ""}</li>`;
+    })
+    .join("");
   const open = data.tasks.filter((t) => !t.done);
   const done = data.tasks.filter((t) => t.done);
   const edit = data.can_edit
@@ -341,6 +359,8 @@ async function loadProduct(id) {
           <label>Çözdüğü sorun <textarea name="problem" rows="2">${esc(p.problem || "")}</textarea></label>
           <label>Kısaca amacı <textarea name="purpose" rows="2">${esc(p.purpose || "")}</textarea></label>
           <label>Teknolojiler <input name="tech" value="${esc(p.tech || "")}" /></label>
+          <p class="form-kicker">Görevliler</p>
+          <div class="member-picks">${memberChecks(data.people, p.member_ids)}</div>
           <button class="primary" type="submit">Kaydet</button>
         </form></section>`
     : `<section class="panel info-grid">
@@ -348,11 +368,15 @@ async function loadProduct(id) {
         <p><span>Kısaca amacı</span>${esc(p.purpose || "—")}</p>
         <p><span>Teknolojiler</span>${esc(p.tech || "—")}</p>
       </section>`;
+  const crewPanel = `<section class="panel">
+        <div class="panel-head"><h2>Görevliler</h2><span class="count">${(p.members || []).length}</span></div>
+        ${crew ? `<ul class="crew-list">${crew}</ul>` : empty("Henüz görevli yok.")}
+      </section>`;
   document.getElementById("view-product").innerHTML = `
     <p class="eyebrow"><button type="button" class="text-btn" data-go="products">← Ürünler</button></p>
     <h1>${esc(p.name)}</h1>
-    <p class="hint">Aktif çalışanlar: ${people}</p>
     ${edit}
+    ${crewPanel}
     <section class="panel"><div class="panel-head"><h2>Açık görevler</h2><span class="count">${open.length}</span></div>
       <div class="card-list">${open.map((t) => card(t, false)).join("") || empty("Açık iş yok.")}</div>
     </section>
@@ -506,7 +530,9 @@ document.getElementById("view-task").addEventListener("submit", async (event) =>
 document.getElementById("view-products").addEventListener("submit", async (event) => {
   event.preventDefault();
   if (event.target.id === "form-product") {
-    await api("/api/products", { method: "POST", body: formFields(event.target) });
+    const body = formFields(event.target);
+    body.member_ids = checkedValues(event.target, "member_ids");
+    await api("/api/products", { method: "POST", body });
     await loadProducts();
   }
 });
@@ -514,7 +540,9 @@ document.getElementById("view-products").addEventListener("submit", async (event
 document.getElementById("view-product").addEventListener("submit", async (event) => {
   event.preventDefault();
   if (event.target.id === "form-product-edit") {
-    await api(`/api/products/${event.target.dataset.id}`, { method: "POST", body: formFields(event.target) });
+    const body = formFields(event.target);
+    body.member_ids = checkedValues(event.target, "member_ids");
+    await api(`/api/products/${event.target.dataset.id}`, { method: "POST", body });
     await loadProduct(event.target.dataset.id);
   }
 });
