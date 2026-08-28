@@ -146,7 +146,8 @@ h1 {
   min-height: 0;
   height: 100%;
   padding: 18px 16px 24px 28px;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   border-right: 1px solid var(--line);
 }
 
@@ -160,27 +161,21 @@ h1 {
   background: rgba(255, 252, 247, 0.7);
 }
 
-.inbox-panel {
-  flex: 1 1 0;
-  min-height: 0;
-  overflow: auto;
+.inbox-panel,
+.missed-panel {
+  flex: 0 0 auto;
+  overflow: visible;
 }
 
 .missed-panel {
-  flex: 0 1 280px;
-  display: flex;
-  flex-direction: column;
-  min-height: 200px;
-  max-height: 46vh;
-  overflow: hidden;
   background: #f8d7d0;
   border-color: #c44b3c;
 }
 
-.missed-panel .card-list {
-  flex: 1 1 auto;
+.rail .card-list {
+  overflow: visible;
+  flex: none;
   min-height: 0;
-  overflow: auto;
 }
 
 .task.warning {
@@ -1107,7 +1102,7 @@ a.icon-btn {
   .missed-panel,
   .done-panel {
     max-height: none;
-    overflow: auto;
+    overflow: visible;
   }
 
   .phase-head,
