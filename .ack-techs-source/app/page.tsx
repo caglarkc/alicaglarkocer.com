@@ -12,9 +12,8 @@ import {
   UsersRound,
   Zap,
 } from 'lucide-react';
-import Link from 'next/link';
-
 import { projects, type Accent } from '@/lib/projects';
+import { ackPath } from '@/lib/paths';
 import { team } from '@/lib/team';
 
 const tickerItems = [
@@ -242,9 +241,9 @@ export default function Home() {
             };
 
             return (
-              <Link
+              <a
                 className="product-card"
-                href={`/projeler/${project.slug}`}
+                href={ackPath(`/projeler/${project.slug}/`)}
                 key={project.slug}
                 style={{ backgroundColor: productColors[project.accent] }}
                 aria-label={`${project.name} detay sayfası`}
@@ -272,7 +271,7 @@ export default function Home() {
                   <span>{metric.label}</span>
                   <ArrowUpRight aria-hidden="true" />
                 </div>
-              </Link>
+              </a>
             );
           })}
         </div>

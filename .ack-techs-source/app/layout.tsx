@@ -45,6 +45,9 @@ export const metadata: Metadata = {
       'Fikirden çalışan ürüne. Ekibimizi ve üretimlerimizi keşfedin.',
     images: ['/og.png'],
   },
+  icons: {
+    icon: '/favicon.svg',
+  },
 };
 
 export default function RootLayout({

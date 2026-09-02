@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, ArrowUpRight } from 'lucide-react';
 
 import { BlockView } from '@/components/rich-text';
+import { ackPath } from '@/lib/paths';
 import { getProject, projects } from '@/lib/projects';
 
 type ProjectPageProps = {
@@ -54,17 +54,17 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   return (
     <main id="top" className="page-shell">
       <header className="site-header" aria-label="Site üst menüsü">
-        <Link href="/" className="brand-mark" aria-label="ACK Techs ana sayfa">
+        <a href={ackPath('/')} className="brand-mark" aria-label="ACK Techs ana sayfa">
           ACK<span>.</span>
-        </Link>
+        </a>
 
         <nav className="main-nav" aria-label="Ana menü">
-          <Link className="nav-link" href="/#urunler">
+          <a className="nav-link" href={ackPath('/#urunler')}>
             Ürünler
-          </Link>
-          <Link className="nav-link" href="/#ekip">
+          </a>
+          <a className="nav-link" href={ackPath('/#ekip')}>
             Ekip
-          </Link>
+          </a>
         </nav>
 
         <span className="eyebrow">{project.status}</span>
@@ -76,9 +76,9 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           aria-labelledby="project-title"
         >
           <div className="project-hero-topline">
-            <Link className="back-link" href="/#projeler">
+            <a className="back-link" href={ackPath('/#projeler')}>
               <ArrowLeft aria-hidden="true" /> Tüm projeler
-            </Link>
+            </a>
             <span className="section-number">{projectNumber}</span>
           </div>
 
@@ -138,16 +138,16 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         </div>
 
         <nav className="project-pager" aria-label="Diğer projeler">
-          <Link className={`pager-card tone-${previous.accent}`} href={`/projeler/${previous.slug}`}>
+          <a className={`pager-card tone-${previous.accent}`} href={ackPath(`/projeler/${previous.slug}/`)}>
             <span className="pager-label">Önceki</span>
             <strong>{previous.name}</strong>
             <span className="pager-type">{previous.type}</span>
-          </Link>
-          <Link className={`pager-card tone-${next.accent}`} href={`/projeler/${next.slug}`}>
+          </a>
+          <a className={`pager-card tone-${next.accent}`} href={ackPath(`/projeler/${next.slug}/`)}>
             <span className="pager-label">Sonraki</span>
             <strong>{next.name}</strong>
             <span className="pager-type">{next.type}</span>
-          </Link>
+          </a>
         </nav>
       </article>
 
@@ -164,7 +164,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         </div>
         <div className="footer-meta">
           <span>© 2026 ACK TECHS</span>
-          <Link href="/#urunler">ÜRÜNLERE DÖN ↑</Link>
+          <a href={ackPath('/#urunler')}>ÜRÜNLERE DÖN ↑</a>
         </div>
       </footer>
     </main>
