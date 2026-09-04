@@ -34,6 +34,7 @@
           <button type="button" class="nav-link" data-go="agenda">Ajandam</button>
           <button type="button" class="nav-link" data-go="products">Ürünler</button>
           <button type="button" class="nav-link" id="btn-ekip" hidden data-go="ekip">Ekip</button>
+          <button type="button" class="nav-link" id="btn-import" hidden>+ Görev içe aktar</button>
           <button type="button" class="nav-link nav-link-out" id="btn-logout">Çıkış</button>
         </nav>
         <label class="board-pick" id="board-wrap" hidden>Ajanda
@@ -126,6 +127,22 @@
     <div id="view-product" class="product-page" hidden></div>
     <div id="view-task" class="task-page" hidden></div>
   </div>
+
+  <dialog class="edit-dialog" id="import-dialog">
+    <form id="form-import" class="new-task">
+      <h2>Görev içe aktar</h2>
+      <p class="hint">JSON dosyasındaki görevler, kullanıcı adıyla eşleşen ekip üyelerine atanır. Dosyayı yalnızca görev atama yetkisi olan kişi içe aktarabilir.</p>
+      <label>Görev JSON dosyası
+        <input id="import-file" name="file" type="file" accept="application/json,.json" required />
+      </label>
+      <p class="form-error" id="import-error" hidden></p>
+      <p class="hint" id="import-result" hidden></p>
+      <div class="dialog-actions">
+        <button class="secondary" type="button" id="btn-import-cancel">Vazgeç</button>
+        <button class="primary" type="submit">Görevleri ekle</button>
+      </div>
+    </form>
+  </dialog>
 
   <script src="config.js"></script>
   <script src="app.js"></script>

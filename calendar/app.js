@@ -218,6 +218,7 @@ async function loadAgenda() {
     ? `${data.assignee.name}${data.assignee.title ? " · " + data.assignee.title : ""}`
     : `${data.user.name}${data.user.title ? " · " + data.user.title : ""}`;
   document.getElementById("btn-ekip").hidden = !data.can_manage;
+  document.getElementById("btn-import").hidden = !data.can_assign;
   setNav("agenda");
   const boardWrap = document.getElementById("board-wrap");
   const boardPick = document.getElementById("board-pick");
@@ -539,6 +540,77 @@ function checkedValues(form, name) {
   return [...form.querySelectorAll(`[name="${name}"]:checked`)].map((el) => el.value);
 }
 
+function importError(message) {
+  const el = document.getElementById("import-error");
+  el.textContent = message;
+  el.hidden = !message;
+}
+
+function normalizeImport(data) {
+  if (!data || data.version !== 1 || !Array.isArray(data.tasks) || !data.tasks.length) {
+    throw new Error("Geçerli bir sürüm 1 görev JSON dosyası seçin.");
+  }
+  const seen = new Set();
+  return data.tasks.map((task, index) => {
+    const label = `Görev ${index + 1}`;
+    if (!task || typeof task !== "object" || !task.id || !task.title || !task.owner_username) {
+      throw new Error(`${label}: id, title ve owner_username zorunludur.`);
+    }
+    if (seen.has(task.id)) throw new Error(`${label}: aynı id dosyada birden fazla kez kullanılmış.`);
+    seen.add(task.id);
+    if (task.priority && !["low", "medium", "high"].includes(task.priority)) {
+      throw new Error(`${label}: priority low, medium veya high olmalıdır.`);
+    }
+    return task;
+  });
+}
+
+async function importTasks(file) {
+  const data = JSON.parse(await file.text());
+  const tasks = normalizeImport(data);
+  const members = state.members || [];
+  const products = state.products || [];
+  const defaultProject = data.product || "";
+  if (defaultProject && !products.some((product) => product.name === defaultProject)) {
+    throw new Error(`Ürün bulunamadı: ${defaultProject}`);
+  }
+
+  const failures = [];
+  let created = 0;
+  for (const task of tasks) {
+    const member = members.find((item) => item.username === task.owner_username);
+    if (!member) {
+      failures.push(`${task.title}: kullanıcı bulunamadı (${task.owner_username})`);
+      continue;
+    }
+    const project = task.project || defaultProject;
+    if (project && !products.some((item) => item.name === project)) {
+      failures.push(`${task.title}: ürün bulunamadı (${project})`);
+      continue;
+    }
+    try {
+      await api("/api/tasks", {
+        method: "POST",
+        body: {
+          kind: "assigned",
+          title: task.title,
+          description: task.description || "",
+          project,
+          targets: [member.id],
+          priority: task.priority || "medium",
+          estimated_time: task.estimated_time || "",
+          deadline_date: task.deadline_date || "",
+          deadline_time: task.deadline_time || "",
+        },
+      });
+      created += 1;
+    } catch (error) {
+      failures.push(`${task.title}: ${error.message}`);
+    }
+  }
+  return { created, failures };
+}
+
 document.getElementById("login-form").onsubmit = async (event) => {
   event.preventDefault();
   const err = document.getElementById("login-error");
@@ -564,6 +636,12 @@ document.getElementById("btn-logout").onclick = async () => {
   localStorage.removeItem("ajanda_token");
   show("screen-login");
 };
+document.getElementById("btn-import").onclick = () => {
+  importError("");
+  document.getElementById("import-result").hidden = true;
+  document.getElementById("import-dialog").showModal();
+};
+document.getElementById("btn-import-cancel").onclick = () => document.getElementById("import-dialog").close();
 document.getElementById("prev-week").onclick = async () => {
   state.week -= 1;
   await loadAgenda();
@@ -647,6 +725,28 @@ document.getElementById("form-assign").onsubmit = async (event) => {
   await api("/api/tasks", { method: "POST", body });
   event.target.reset();
   await loadAgenda();
+};
+document.getElementById("form-import").onsubmit = async (event) => {
+  event.preventDefault();
+  importError("");
+  const result = document.getElementById("import-result");
+  result.hidden = true;
+  const button = event.target.querySelector("button[type='submit']");
+  try {
+    const file = document.getElementById("import-file").files[0];
+    if (!file) throw new Error("Bir JSON dosyası seçin.");
+    button.disabled = true;
+    button.textContent = "Ekleniyor…";
+    const summary = await importTasks(file);
+    result.textContent = `${summary.created} görev eklendi.${summary.failures.length ? ` Eklenemeyenler: ${summary.failures.join(" · ")}` : ""}`;
+    result.hidden = false;
+    await loadAgenda();
+  } catch (error) {
+    importError(error.message || "Görevler içe aktarılamadı.");
+  } finally {
+    button.disabled = false;
+    button.textContent = "Görevleri ekle";
+  }
 };
 
 document.getElementById("view-ekip").addEventListener("submit", async (event) => {
