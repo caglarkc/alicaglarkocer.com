@@ -25,8 +25,8 @@ export const team: TeamMember[] = [
   {
     name: 'Doğukan Taha Tıraş',
     initials: 'DT',
-    role: 'Frontend Developer & AI',
-    company: 'Turkish Airlines',
+    role: 'Co-Founder · Frontend & AI Lead',
+    company: 'ACK Techs',
     bio: 'Modern React/Next.js arayüzleri, Haier Europe Datathon 4.lüğü ve Learning-to-Rank arama optimizasyonu.',
     tags: ['Next.js', 'React', 'Data Science', 'Semantic Search'],
     color: '#ffd84f',
