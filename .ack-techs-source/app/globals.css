@@ -463,10 +463,15 @@ a {
   box-shadow:11px 11px 0 var(--ink);
   transform:translate(-3px,-3px)
 }
+.team-card-head {
+  position:relative;
+  justify-content:center;
+  display:flex
+}
 .avatar-block {
   border:3px solid var(--ink);
-  width:108px;
-  height:108px;
+  width:148px;
+  height:148px;
   overflow:hidden;
   background:#fff;
   font-family:var(--font-geist-mono);
@@ -480,16 +485,20 @@ a {
   width:100%;
   height:100%;
   object-fit:cover;
-  object-position:center 18%
+  object-position:center 18%;
+  background:#fff
 }
 .card-number {
+  position:absolute;
+  top:0;
+  right:0;
   font-family:var(--font-geist-mono);
   font-size:.7rem;
   font-weight:900
 }
 .team-card h3 {
   letter-spacing:-.04em;
-  margin-top:2.4rem;
+  margin-top:1.4rem;
   font-size:2rem;
   font-weight:950
 }

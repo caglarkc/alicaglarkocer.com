@@ -183,20 +183,17 @@ export default function Home() {
               rel="noopener noreferrer"
               aria-label={`${member.name} LinkedIn profili`}
             >
-              <div className="flex items-start justify-between">
-                <span
-                  className="avatar-block"
-                  style={{ backgroundColor: member.color }}
-                >
+              <div className="team-card-head">
+                <span className="card-number">
+                  {String(index + 1).padStart(2, '0')}
+                </span>
+                <span className="avatar-block">
                   <img
                     src={ackPath(`/profile-photos/${member.photo}`)}
                     alt={member.name}
-                    width={108}
-                    height={108}
+                    width={148}
+                    height={148}
                   />
-                </span>
-                <span className="card-number">
-                  {String(index + 1).padStart(2, '0')}
                 </span>
               </div>
               <div>
