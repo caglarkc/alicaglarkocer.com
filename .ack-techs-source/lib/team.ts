@@ -7,6 +7,7 @@ export type TeamMember = {
   tags: string[];
   color: string;
   linkedin: string;
+  photo: string;
 };
 
 export const team: TeamMember[] = [
@@ -19,6 +20,7 @@ export const team: TeamMember[] = [
     tags: ['Python', 'Go', 'LLMOps', 'Observability'],
     color: '#c9ff45',
     linkedin: 'https://www.linkedin.com/in/ali-caglar-kocer/',
+    photo: 'ali-caglar-kocer.png',
   },
   {
     name: 'Doğukan Taha Tıraş',
@@ -29,6 +31,7 @@ export const team: TeamMember[] = [
     tags: ['Next.js', 'React', 'Data Science', 'Semantic Search'],
     color: '#ffd84f',
     linkedin: 'https://www.linkedin.com/in/dogukantahatiras/',
+    photo: 'dogukan-taha-tiras.png',
   },
   {
     name: 'Ayşenur Demezoğlu',
@@ -39,6 +42,7 @@ export const team: TeamMember[] = [
     tags: ['React', 'Next.js', 'TypeScript', 'CSS'],
     color: '#dcd0ff',
     linkedin: 'https://www.linkedin.com/in/aysenurdemezoglu/',
+    photo: 'aysenur-demezoglu.jpeg',
   },
   {
     name: 'Sena Demirbaş',
@@ -49,6 +53,7 @@ export const team: TeamMember[] = [
     tags: ['Context Eng', 'Data Eng', 'Python', 'C# / .NET'],
     color: '#ffd1b8',
     linkedin: 'https://www.linkedin.com/in/sena-demirbas/',
+    photo: 'sena-demirbas.jpeg',
   },
   {
     name: 'Zeliha Kavak',
@@ -59,6 +64,7 @@ export const team: TeamMember[] = [
     tags: ['Cyber Security', 'Zero Trust', 'Post-Quantum', 'PenTest'],
     color: '#ff7f76',
     linkedin: 'https://www.linkedin.com/in/zelihakavak/',
+    photo: 'zeliha-kavak.png',
   },
   {
     name: 'Ozan Berk Gökçe',
@@ -69,16 +75,18 @@ export const team: TeamMember[] = [
     tags: ['Figma', 'Design Systems', 'UX Research', 'HCI'],
     color: '#dcd0ff',
     linkedin: 'https://www.linkedin.com/in/ozangkce/',
+    photo: 'ozan-gokce.jpeg',
   },
   {
     name: 'Batuhan Evleksiz',
     initials: 'BE',
-    role: 'Frontend Developer',
+    role: 'Full-Stack Developer & AI',
     company: 'ACK Techs',
-    bio: 'Ürün arayüzlerini piksel netliğinde hayata geçiriyor; performans, etkileşim ve tutarlı tasarım sistemini aynı anda kovalıyor.',
-    tags: ['React', 'TypeScript', 'UI', 'Vite'],
+    bio: 'Modern web teknolojileriyle ölçeklenebilir ve kullanıcı odaklı ürünler geliştiriyor. Frontend ve backend süreçlerini birlikte ele alırken yapay zekâ destekli çözümleri gerçek problemlere uyguluyor.',
+    tags: ['React', 'TypeScript', 'Full-Stack', 'AI'],
     color: '#78c7ff',
     linkedin: 'https://www.linkedin.com/in/batuhanevleksiz/',
+    photo: 'batuhan-evleksiz.jpeg',
   },
   {
     name: 'Ayselin Aydoğdu',
@@ -89,15 +97,28 @@ export const team: TeamMember[] = [
     tags: ['LLM', 'AI Agents', 'Python', 'Eval'],
     color: '#c9ff45',
     linkedin: 'https://www.linkedin.com/in/ayselin-aydo%C4%9Fdu-b4a783293/',
+    photo: 'ayselin-aydogdu.png',
   },
   {
     name: 'Ayşe Sena Bağdat',
     initials: 'AS',
-    role: 'AI & Data',
+    role: 'AI & Data | Cybersecurity',
     company: 'ACK Techs',
-    bio: 'Veri, yapay zekâ ve ürün kesişiminde problemleri tarıyor; araştırma çıktısını ekibin ürettiği araçlara bağlayan köprüyü kuruyor.',
-    tags: ['Data', 'AI', 'Research', 'Product'],
+    bio: 'Yapay zekâ, veri ve siber güvenlik alanlarında çalışıyor. Araştırma ve analitik yaklaşımı teknolojiyle birleştirerek gerçek problemlere yönelik yenilikçi ve güvenli çözümler geliştiriyor.',
+    tags: ['AI', 'Data', 'Cybersecurity', 'Research'],
     color: '#ffd84f',
     linkedin: 'https://www.linkedin.com/in/ay%C5%9Fe-sena-ba%C4%9Fdat/',
+    photo: 'ayse-sena.png',
+  },
+  {
+    name: 'Mehmet Yıldız',
+    initials: 'MY',
+    role: 'AI Engineer',
+    company: 'ACK Techs',
+    bio: 'Python, veri mühendisliği ve backend temelli bir AI engineer. Modelleri gerçek sistemlere bağlayan katmanı kuruyor; veri boru hatlarından ürün içi yapay zekâ akışlarına kadar uçtan uca düşünüyor.',
+    tags: ['Python', 'SQL', 'Data Eng', 'ML'],
+    color: '#ffd1b8',
+    linkedin: 'https://www.linkedin.com/in/mehmetyildizbst/',
+    photo: 'mehmet-yildiz.png',
   },
 ];

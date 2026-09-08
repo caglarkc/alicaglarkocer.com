@@ -465,14 +465,22 @@ a {
 }
 .avatar-block {
   border:3px solid var(--ink);
-  width:84px;
-  height:84px;
+  width:108px;
+  height:108px;
+  overflow:hidden;
+  background:#fff;
   font-family:var(--font-geist-mono);
   box-shadow:4px 4px 0 var(--ink);
   place-items:center;
   font-size:1.6rem;
   font-weight:950;
   display:grid
+}
+.avatar-block img {
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center 18%
 }
 .card-number {
   font-family:var(--font-geist-mono);

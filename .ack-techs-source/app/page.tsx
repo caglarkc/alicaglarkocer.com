@@ -129,7 +129,7 @@ export default function Home() {
           </div>
           <div className="hero-stats">
             <div className="hero-stat">
-              <strong>09</strong>
+              <strong>10</strong>
               <span>kişilik ekip</span>
             </div>
             <div className="hero-stat">
@@ -188,7 +188,12 @@ export default function Home() {
                   className="avatar-block"
                   style={{ backgroundColor: member.color }}
                 >
-                  {member.initials}
+                  <img
+                    src={ackPath(`/profile-photos/${member.photo}`)}
+                    alt={member.name}
+                    width={108}
+                    height={108}
+                  />
                 </span>
                 <span className="card-number">
                   {String(index + 1).padStart(2, '0')}
