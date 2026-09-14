@@ -10,6 +10,7 @@ const routes = [
   '/ack-techs/projeler/demandrift/',
   '/ack-techs/projeler/ev-karnesi/',
   '/ack-techs/projeler/steward/',
+  '/ack-techs/projeler/first-step-into-path/',
 ];
 
 async function fetchPage(route) {
@@ -31,58 +32,9 @@ async function fetchPage(route) {
 }
 
 function formatHtml(html) {
-  const placeholders = [];
-  const stash = (match) => {
-    placeholders.push(match);
-    return `___PLACEHOLDER_${placeholders.length - 1}___`;
-  };
-
-  html = html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, stash);
-  html = html.replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, stash);
-
-  const voidTags = new Set([
-    'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link',
-    'meta', 'param', 'source', 'track', 'wbr',
-  ]);
-  const tokens = html.split(/(<[^>]+>)/);
-  const lines = [];
-  let indent = 0;
-
-  for (const token of tokens) {
-    if (!token) continue;
-    if (token.startsWith('<')) {
-      const nameMatch = token.match(/^<\/?([a-zA-Z0-9:-]+)/);
-      const name = nameMatch?.[1]?.toLowerCase() ?? '';
-      const isClose = token.startsWith('</');
-      const isComment = token.startsWith('<!--');
-      const isDoctype = token.toLowerCase().startsWith('<!doctype');
-      const selfClosing =
-        token.endsWith('/>') || voidTags.has(name) || isComment || isDoctype;
-      if (isClose) indent = Math.max(0, indent - 1);
-      lines.push(`${'  '.repeat(indent)}${token}`);
-      if (!isClose && !selfClosing) indent += 1;
-      continue;
-    }
-
-    const text = token.trim();
-    if (text) lines.push(`${'  '.repeat(indent)}${text}`);
-  }
-
-  let formatted = `${lines.join('\n')}\n`;
-  const leaf =
-    /(<(title|a|p|h1|h2|h3|h4|h5|h6|span|strong|em|small|label|button)([^>]*)>)\n\s+([^<\n]{1,160})\n\s+(<\/\2>)/g;
-  const empty = /(<([a-zA-Z0-9:-]+)([^>]*)>)\n\s+(<\/\2>)/g;
-  let previous;
-  do {
-    previous = formatted;
-    formatted = formatted.replace(leaf, '$1$4$5').replace(empty, '$1$4');
-  } while (previous !== formatted);
-
-  for (const [index, block] of placeholders.entries()) {
-    formatted = formatted.replace(`___PLACEHOLDER_${index}___`, block);
-  }
-
-  return formatted.replaceAll('</script><script', '</script>\n    <script');
+  // Preserve SSR whitespace so the React payload hydrates without differences.
+  // Cached font URLs need public paths when these pages are hosted statically.
+  return html.replace(/\/[^\s"'()<>]*\/\.vinext\/fonts\//g, '/ack-techs/fonts/');
 }
 
 await mkdir(outputDirectory, { recursive: true });
@@ -95,6 +47,17 @@ await cp(join(process.cwd(), 'dist/client/favicon.svg'), join(outputDirectory, '
 });
 await cp(join(process.cwd(), 'dist/client/og.png'), join(outputDirectory, 'og.png'), {
   force: true,
+});
+
+await cp(join(process.cwd(), 'public/profile-photos'), join(outputDirectory, 'profile-photos'), {
+  recursive: true,
+  force: true,
+});
+
+await cp(join(process.cwd(), '.vinext/fonts'), join(outputDirectory, 'fonts'), {
+  recursive: true,
+  force: true,
+  filter: (source) => !source.endsWith('.css'),
 });
 
 for (const route of routes) {

@@ -33,12 +33,12 @@ const productColors: Record<Accent, string> = {
   lilac: '#dcd0ff',
 };
 
-const productMetrics: Record<string, { value: string; label: string }> = {
-  watchtower: { value: '81', label: 'davranış özelliği' },
-  'sentinel-coming': { value: 'CLI', label: 'öncelikli kurulum' },
-  demandrift: { value: 'AI', label: 'pazar ajanı' },
-  'ev-karnesi': { value: '1', label: 'konut raporu' },
-  steward: { value: 'İÇ', label: 'şirket asistanı' },
+const productHighlights: Record<string, { value: string; label: string }> = {
+  'ev-karnesi': { value: 'Karar', label: 'Evinizi tanıyarak seçin' },
+  demandrift: { value: 'Keşif', label: 'Fikrinizin potansiyelini görün' },
+  steward: { value: 'Destek', label: 'İşinize odaklanın' },
+  'sentinel-coming': { value: 'Gözlem', label: 'Sistemlerinizi anlayın' },
+  'first-step-into-path': { value: 'Deneyim', label: 'İlk adımınızı atın' },
 };
 
 export default function Home() {
@@ -80,18 +80,19 @@ export default function Home() {
             </span>
           </div>
           <div className="relative z-10 py-16">
-            <p className="eyebrow mb-5">Kodun ötesinde fikir üretiyoruz.</p>
+            <p className="eyebrow mb-5">Bağımsız bir ürün ve teknoloji ekibi.</p>
             <h1 className="hero-title">
-              BİRLİKTE
+              İHTİYACI
               <br />
-              <span className="highlight-word">ÜRETİYOR,</span>
+              <span className="highlight-word">ANLIYOR,</span>
               <br />
-              BİRLİKTE BÜYÜYORUZ.
+              ÇÖZÜMÜ ÜRETİYORUZ.
             </h1>
             <p className="mt-8 max-w-2xl text-lg font-semibold leading-relaxed sm:text-xl">
-              ACK Techs olarak Watchtower, Sentinel, DemandRift ve Ev Karnesi
-              gibi ürünleri tasarlayan, deneyen ve çalışan hale getiren çok
-              disiplinli bir teknoloji ekibiyiz.
+              ACK Techs, insanların ve ekiplerin kararlarını kolaylaştıran,
+              işlerine zaman kazandıran dijital ürünler geliştirir. Yazılım,
+              yapay zekâ ve tasarımı aynı masada buluşturur; her ürünü onu
+              kullanacak insanlarla birlikte şekillendiririz.
             </p>
           </div>
           <div className="relative z-10 flex flex-wrap gap-4">
@@ -103,21 +104,21 @@ export default function Home() {
             </a>
           </div>
           <span aria-hidden="true" className="hero-sticker">
-            BUILD
+            ACK
             <br />
-            BOLD.
+            TECHS.
           </span>
         </div>
 
         <aside className="hero-aside" aria-label="Ekip özeti">
           <div className="hero-aside-copy">
             <div className="hero-aside-copy-top">
-              <span className="eyebrow">Biz ne yaparız?</span>
+              <span className="eyebrow">Nasıl çalışırız?</span>
               <ArrowUpRight className="size-9" aria-hidden="true" />
             </div>
             <div className="hero-aside-heading">
               <h2 className="max-w-sm text-4xl font-black uppercase leading-[.98] sm:text-5xl">
-                Fikirleri çalışan ürünlere dönüştürürüz.
+                İyi bir ürün, doğru soruyla başlar.
               </h2>
               <div className="mt-8 flex flex-wrap gap-2">
                 <span className="mini-pill">Web</span>
@@ -129,12 +130,12 @@ export default function Home() {
           </div>
           <div className="hero-stats">
             <div className="hero-stat">
-              <strong>10</strong>
+              <strong>{team.length}</strong>
               <span>kişilik ekip</span>
             </div>
             <div className="hero-stat">
-              <strong>05</strong>
-              <span>aktif ürün</span>
+              <strong>{String(projects.length).padStart(2, '0')}</strong>
+              <span>ürün ve girişim</span>
             </div>
             <div className="hero-stat">
               <strong>01</strong>
@@ -175,14 +176,7 @@ export default function Home() {
 
         <div className="team-grid">
           {team.map((member, index) => (
-            <a
-              className="team-card"
-              key={member.name}
-              href={member.linkedin}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`${member.name} LinkedIn profili`}
-            >
+            <article className="team-card" key={member.name}>
               <div className="team-card-head">
                 <span className="card-number">
                   {String(index + 1).padStart(2, '0')}
@@ -197,7 +191,7 @@ export default function Home() {
                 </span>
               </div>
               <div>
-                <h3>{member.name}</h3>
+                <h3><a href={member.linkedin} target="_blank" rel="noopener noreferrer">{member.name}</a></h3>
                 <p className="member-role">{member.role}</p>
                 <p className="member-role">{member.company}</p>
                 <p className="member-bio">{member.bio}</p>
@@ -209,7 +203,11 @@ export default function Home() {
                   </span>
                 ))}
               </div>
-            </a>
+              <div className="member-links">
+                <a href={member.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn ↗</a>
+                {member.github && <a href={member.github} target="_blank" rel="noopener noreferrer">GitHub ↗</a>}
+              </div>
+            </article>
           ))}
         </div>
       </section>
@@ -230,14 +228,15 @@ export default function Home() {
             </h2>
           </div>
           <p className="section-copy">
-            Watchtower, Sentinel, DemandRift, Ev Karnesi ve Steward. Her biri
-            gerçek bir ihtiyacı daha iyi çözmek için var.
+            Ev seçiminden iş hayatına, farklı ihtiyaçlara odaklanan ürünler
+            geliştiriyoruz. Her birinde hedefimiz, karmaşık bir süreci daha
+            anlaşılır ve kullanışlı hale getirmek.
           </p>
         </div>
 
         <div className="products-list">
           {projects.map((project, index) => {
-            const metric = productMetrics[project.slug] ?? {
+            const metric = productHighlights[project.slug] ?? {
               value: String(index + 1).padStart(2, '0'),
               label: project.type,
             };
@@ -283,8 +282,8 @@ export default function Home() {
         <div className="goal-statement bg-pink">
           <span className="section-index">03 / AMACIMIZ</span>
           <blockquote>
-            “Teknolojiyi daha fazla özellik için değil,{' '}
-            <span>daha az sürtünme</span> için kullanıyoruz.”
+            “Başarımızı, geliştirdiğimiz ürünlerin{' '}
+            <span>insanların hayatında yarattığı faydayla</span> ölçüyoruz.”
           </blockquote>
           <div className="statement-footer">
             <span>ACK MANIFESTO · 2026</span>
@@ -409,7 +408,7 @@ export default function Home() {
             Unvanından önce merakını, portföyünden önce nasıl düşündüğünü görmek
             istiyoruz.
           </p>
-          <a className="brutal-button bg-pink" href="#iletisim">
+          <a className="brutal-button bg-pink" href="mailto:ack.techs0@gmail.com">
             Kendini anlat <ArrowUpRight aria-hidden="true" />
           </a>
         </div>
@@ -452,8 +451,8 @@ export default function Home() {
         </div>
         <div className="footer-contact">
           <span className="eyebrow">Bir şey mi konuşacağız?</span>
-          <a href="mailto:hello@example.com">
-            hello@example.com <ArrowUpRight aria-hidden="true" />
+          <a href="mailto:ack.techs0@gmail.com">
+            ack.techs0@gmail.com <ArrowUpRight aria-hidden="true" />
           </a>
         </div>
         <div className="footer-meta">

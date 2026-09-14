@@ -1,7 +1,6 @@
 /**
- * Proje içerikleri, depo kökündeki `contents/*.md` dosyalarındaki README
- * metinlerinden birebir aktarılmıştır. Kod blokları, dosya yolları, ortam
- * değişkeni adları ve komutlar özgün hâliyle korunur.
+ * Teknik proje arşivi README içeriklerini korur. Ana sayfanın ürün seçkisi
+ * ve Ev Karnesi tanıtımı aşağıdaki projects listesinde düzenlenir.
  */
 
 export type Block =
@@ -35,7 +34,7 @@ export type Project = {
   sections: Section[];
 };
 
-export const projects: Project[] = [
+const projectArchive: Project[] = [
   {
     slug: 'watchtower',
     name: 'Watchtower',
@@ -358,7 +357,7 @@ SOAK_HOURS=24 ./scripts/soak_24h.sh`,
 
   {
     slug: 'sentinel-coming',
-    name: 'Sentinel Coming',
+    name: 'Sentinel',
     type: 'Gözlemlenebilirlik CLI’ı',
     status: 'Geliştiriliyor',
     accent: 'blue',
@@ -367,7 +366,7 @@ SOAK_HOURS=24 ./scripts/soak_24h.sh`,
       'Metrik, log ve trace’i tek terminal akışında toplayan ajan tabanlı CLI ve salt-okunur gözlemlenebilirlik ağ geçidi.',
     tags: ['Python', 'FastAPI', 'Kubernetes', 'OpenTelemetry'],
     lead: [
-      'Sentinel Coming; ajan tabanlı bir Python CLI’ı, salt-okunur bir gözlemlenebilirlik ağ geçidi ve gerçekçi bir çok servisli test platformu etrafında kurulmuş, portföy düzeyinde bir gözlemlenebilirlik ve altyapı otomasyonu projesidir. Operatörlerin metrik, log, trace, yapılandırma ve dağıtım durumunu tek bir terminal akışından daha güvenli biçimde incelemesi gereken yerel laboratuvarlar ve Kubernetes/COS tarzı ortamlar için tasarlanmıştır.',
+      'Sentinel; ajan tabanlı bir Python CLI’ı, salt-okunur bir gözlemlenebilirlik ağ geçidi ve gerçekçi bir çok servisli test platformu etrafında kurulmuş, portföy düzeyinde bir gözlemlenebilirlik ve altyapı otomasyonu projesidir. Operatörlerin metrik, log, trace, yapılandırma ve dağıtım durumunu tek bir terminal akışından daha güvenli biçimde incelemesi gereken yerel laboratuvarlar ve Kubernetes/COS tarzı ortamlar için tasarlanmıştır.',
       'Ürünün çekirdeği `sentinel-cli`’dır: tek seferlik istemler çalıştırabilen, REPL başlatabilen, yapılandırmayı inceleyebilen, health check yapabilen, yerel gözlemlenebilirlik yığınları kurabilen ve ağ geçidi destekli bir telemetri katmanını sorgulayabilen bir Python komut satırı asistanı. Ağ geçidi; Prometheus, Loki ve Tempo erişimini tek bir salt-okunur HTTP API’si arkasında tutar, böylece CLI her arka uç URL’ini doğrudan bilmek zorunda kalmaz.',
     ],
     sections: [
@@ -1630,6 +1629,57 @@ helm upgrade --install sentinel ./charts/sentinel \\
   },
 ];
 
+
+const evKarnesi: Project = {
+  ...projectArchive.find((project) => project.slug === 'ev-karnesi')!,
+  type: 'Evinizi tanıyın, kararınızı netleştirin',
+  cardDescription: 'Bir evin size uygun olup olmadığını ilan fotoğraflarından anlayamazsınız. Ev Karnesi; binayı, çevresini, ulaşım olanaklarını ve günlük yaşam koşullarını bir araya getirerek seçeneklerinizi karşılaştırmanıza, doğru soruları sormanıza ve daha bilinçli karar vermenize yardımcı olur.',
+  tags: ['Ev karşılaştırma', 'Mahalle ve ulaşım', 'Yaşam koşulları'],
+  lead: [
+    'Yeni bir ev, yeni bir hayat demek. Ev Karnesi, satın almayı ya da kiralamayı düşündüğünüz evi ve çevresini daha yakından tanımanız için tasarlanıyor.',
+    'Ulaşımdan günlük ihtiyaçlara, güneş alma koşullarından çevresel risk göstergelerine kadar kararınızı etkileyen bilgileri anlaşılır bir yerde buluşturmayı hedefliyor. Böylece araştırmaya ayırdığınız zamanı azaltıp sizin için önemli olanlara odaklanabilirsiniz.',
+  ],
+  sections: [
+    {
+      id: 'evin-otesini-gorun',
+      title: 'İlanın ötesini görün',
+      blocks: [{ kind: 'text', body: ['Güzel bir salon fotoğrafı, mahallenin nasıl hissettirdiğini anlatmaz. İşe ulaşımınız, yakındaki parklar, günlük ihtiyaçlarınız ve çevrenin koşulları da ev seçiminizin bir parçasıdır. Ev Karnesi bu büyük resmi görmenize yardımcı olmak için var.'] }],
+    },
+    {
+      id: 'size-uygun-ev',
+      title: 'Sizin hayatınıza uygun evi bulun',
+      blocks: [{ kind: 'text', body: ['Bir öğrenci, çocuklu bir aile ve evden çalışan biri aynı evden farklı şeyler bekler. Önceliklerinizi belirleyin, seçeneklerinizi yan yana değerlendirin ve hangi evin yaşamınıza daha çok uyduğunu görün.'] }],
+    },
+    {
+      id: 'bilincli-karar',
+      title: 'Karar vermeden önce ne soracağınızı bilin',
+      blocks: [{ kind: 'text', body: ['Ev Karnesi, güçlü yönlerin yanında belirsiz kalan noktaları ve ayrıca araştırmanız gereken konuları da görünür kılmayı amaçlar. Eviniz hakkında daha iyi sorular sormanızı sağlar; uzman incelemesinin yerine geçmez.'] }],
+    },
+  ],
+};
+
+const firstStep: Project = {
+  slug: 'first-step-into-path',
+  name: 'FIRST STEP INTO PATH',
+  type: 'Kariyere ilk adım',
+  status: 'Çok yakında',
+  accent: 'lime',
+  cardClassName: 'project-card',
+  cardDescription: 'Açık kaynağa ilk katkıdan küçük ücretli işlere, gerçek müşterilerle çalışmaktan deneyimli isimlerin rehberliğine uzanan bir yol. Yolun sonunda, şirketlerin gerçek problemlerini çözerek yeteneğini gösterebileceğin fırsatlar var. Çok yakında daha fazla detay paylaşacağız.',
+  tags: ['Açık kaynak', 'Gerçek deneyim', 'Mentorluk'],
+  lead: ['Açık kaynağa ilk katkıdan küçük ücretli işlere, gerçek müşterilerle çalışmaktan deneyimli isimlerin rehberliğine uzanan bir yol. Yolun sonunda, şirketlerin gerçek problemlerini çözerek yeteneğini gösterebileceğin fırsatlar var. Çok yakında daha fazla detay paylaşacağız.'],
+  sections: [],
+};
+
+export const projects: Project[] = [
+  evKarnesi,
+  projectArchive.find((project) => project.slug === 'demandrift')!,
+  projectArchive.find((project) => project.slug === 'steward')!,
+  projectArchive.find((project) => project.slug === 'sentinel-coming')!,
+  firstStep,
+];
+
 export function getProject(slug: string): Project | undefined {
-  return projects.find((project) => project.slug === slug);
+  return projects.find((project) => project.slug === slug)
+    ?? projectArchive.find((project) => project.slug === slug);
 }

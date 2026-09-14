@@ -76,7 +76,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           aria-labelledby="project-title"
         >
           <div className="project-hero-topline">
-            <a className="back-link" href={ackPath('/#projeler')}>
+            <a className="back-link" href={ackPath('/#urunler')}>
               <ArrowLeft aria-hidden="true" /> Tüm projeler
             </a>
             <span className="section-number">{projectNumber}</span>
@@ -158,8 +158,8 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           </a>
         </div>
         <div className="footer-contact">
-          <a href="mailto:hello@example.com">
-            hello@example.com <ArrowUpRight aria-hidden="true" />
+          <a href="mailto:ack.techs0@gmail.com">
+            ack.techs0@gmail.com <ArrowUpRight aria-hidden="true" />
           </a>
         </div>
         <div className="footer-meta">
