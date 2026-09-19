@@ -1,0 +1,51 @@
+[
+  {
+    "file": "celebrate.png",
+    "width": 1536,
+    "height": 1024,
+    "mode": "RGB",
+    "hasAlpha": false
+  },
+  {
+    "file": "idle-blink.png",
+    "width": 1536,
+    "height": 1024,
+    "mode": "RGB",
+    "hasAlpha": false
+  },
+  {
+    "file": "reference.png",
+    "width": 1536,
+    "height": 1024,
+    "mode": "RGB",
+    "hasAlpha": false
+  },
+  {
+    "file": "sleep.png",
+    "width": 1536,
+    "height": 1024,
+    "mode": "RGB",
+    "hasAlpha": false
+  },
+  {
+    "file": "think.png",
+    "width": 1536,
+    "height": 1024,
+    "mode": "RGB",
+    "hasAlpha": false
+  },
+  {
+    "file": "walk-right.png",
+    "width": 1536,
+    "height": 1024,
+    "mode": "RGB",
+    "hasAlpha": false
+  },
+  {
+    "file": "wave.png",
+    "width": 1536,
+    "height": 1024,
+    "mode": "RGB",
+    "hasAlpha": false
+  }
+]

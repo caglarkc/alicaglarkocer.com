@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="tr">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maskot — hareket taslakları</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#17191d;color:#f1f2f4;font:16px/1.6 system-ui,sans-serif}main{max-width:1000px;margin:auto;padding:32px 24px}h1{font-size:28px;margin-bottom:8px}.note{color:#c5c8d0;max-width:80ch}label{display:inline-flex;align-items:center;gap:8px;margin:8px 18px 8px 0}select,button{font:inherit;background:#30343d;color:inherit;border:1px solid #686e7b;border-radius:8px;padding:8px 12px}button{cursor:pointer}.stage{display:grid;place-items:center;background:#252831;border:1px solid #414651;border-radius:16px;min-height:320px;margin:24px 0}.sprite{width:192px;height:256px;background-size:768px 512px;background-repeat:no-repeat;image-rendering:pixelated}.sheet{display:block;width:100%;height:auto;border-radius:8px}a{color:#a8cdfa}output{font-variant-numeric:tabular-nums}
+</style>
+<main>
+<h1>Maskot hareket taslakları</h1>
+<p class="note">Ana referans: gönderdiğin marsupilami.png. Bu oynatıcı üretilen çizimleri değiştirmeden 4 × 2 hücreyle gösterir. Dama deseni dosyalara işlenmiştir; gerçek şeffaflık değildir. Ölçek, hücre sınırı ve poz geçişleri son animasyon öncesinde düzeltilmelidir.</p>
+<label>Hareket <select id="animation"><option value="walk-right">Yürüme</option><option value="idle-blink">Bekleme / göz kırpma</option><option value="wave">El sallama</option><option value="think">Düşünme</option><option value="sleep">Uyumaya geçiş</option><option value="celebrate">Sevinme / zıplama</option></select></label>
+<button id="play" type="button">Oynat</button>
+<label>Hız <input id="fps" type="range" min="1" max="16" value="8"><output id="speed">8 kare/sn</output></label>
+<label><input id="flip" type="checkbox">Sola çevir</label>
+<div class="stage"><div id="sprite" class="sprite" role="img" aria-label="Seçilen maskot animasyon karesi"></div></div>
+<label>Kare <input id="frame" type="range" min="0" max="7" value="0"><output id="counter">1 / 8</output></label>
+<p class="note">Uyuma dizisini döngüde oynatmak başlangıca sıçrama yapar. Son üründe uykuya giriş bir kez, dinlenme kareleri ayrı döngü olarak kullanılacak. Sola çevirme yalnızca aynı çizimin ayna görünümüdür.</p>
+<p><a id="download" href="walk-right.png" download>Seçili çizim sayfasını indir</a> · <a href="reference.png">Ana referans</a> · <a href="README.md">Hazırlık notları</a></p>
+<img id="sheet" class="sheet" src="walk-right.png" alt="Sekiz karelik çizim sayfası">
+</main>
+<script>
+const $=id=>document.getElementById(id);let playing=false,timer=null,index=0;
+function render(){const name=$('animation').value;$('sprite').style.backgroundImage=`url('${name}.png')`;$('sprite').style.backgroundPosition=`${-(index%4)*192}px ${-Math.floor(index/4)*256}px`;$('sprite').style.transform=$('flip').checked?'scaleX(-1)':'none';$('frame').value=index;$('counter').textContent=`${index+1} / 8`;}
+function schedule(){clearInterval(timer);timer=null;$('play').textContent=playing?'Duraklat':'Oynat';if(playing)timer=setInterval(()=>{index=(index+1)%8;render()},1000/Number($('fps').value));}
+$('play').onclick=()=>{playing=!playing;schedule()};$('fps').oninput=()=>{$('speed').textContent=`${$('fps').value} kare/sn`;schedule()};$('frame').oninput=()=>{playing=false;schedule();index=Number($('frame').value);render()};$('flip').onchange=render;$('animation').onchange=()=>{index=0;const path=$('animation').value+'.png';$('sheet').src=path;$('download').href=path;render()};document.addEventListener('visibilitychange',()=>{if(document.hidden){playing=false;schedule()}});render();
+</script>
+</html>
