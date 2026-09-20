@@ -64,22 +64,6 @@ export const team: TeamMember[] = [
     "github": "https://github.com/aysenurdemezoglu"
   },
   {
-    "name": "Ozan Berk Gökçe",
-    "initials": "OG",
-    "role": "UX/UI Designer",
-    "company": "Freelance & Artist",
-    "bio": "İnsan-makine etkileşimi, Figma tasarım sistemleri (Design Tokens), kullanıcı deneyimi araştırmaları ve prototipleme.",
-    "tags": [
-      "Figma",
-      "Design Systems",
-      "UX Research",
-      "HCI"
-    ],
-    "color": "#dcd0ff",
-    "linkedin": "https://www.linkedin.com/in/ozangkce/",
-    "photo": "ozan-gokce.jpeg"
-  },
-  {
     "name": "Batuhan Evleksiz",
     "initials": "BE",
     "role": "Full-Stack Developer & AI",
@@ -159,19 +143,5 @@ export const team: TeamMember[] = [
     "linkedin": "https://www.linkedin.com/in/aynur-oru%C3%A7o%C4%9Flu/",
     "github": "https://github.com/aynurorucoglu",
     "photo": "aynur.jpeg"
-  },
-  {
-    "name": "Onur Ulusoy",
-    "initials": "OU",
-    "role": "UI Designer",
-    "company": "ACK Techs",
-    "bio": "Arayüz tasarımı alanında kendini geliştiriyor. Sade, anlaşılır ve görsel açıdan tutarlı ekranlar tasarlamaya odaklanıyor; gerçek ürünlerde sorumluluk alarak ve ekiple birlikte üreterek sektörde deneyim kazanmayı hedefliyor.",
-    "tags": [
-      "UI Design",
-      "Arayüz Tasarımı"
-    ],
-    "color": "#dcd0ff",
-    "linkedin": "https://www.linkedin.com/in/onur-ulusoy-450873188/",
-    "photo": "onur.jpeg"
   }
 ];
