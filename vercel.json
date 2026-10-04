@@ -18,6 +18,16 @@
   ],
   "redirects": [
     {
+      "source": "/ack-techs/",
+      "destination": "https://ack-techs.com/",
+      "permanent": true
+    },
+    {
+      "source": "/ack-techs/:path*/",
+      "destination": "https://ack-techs.com/:path*/",
+      "permanent": true
+    },
+    {
       "source": "/ack-techs",
       "destination": "https://ack-techs.com/",
       "permanent": true
