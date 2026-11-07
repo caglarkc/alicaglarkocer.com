@@ -12,11 +12,20 @@
   ],
   "rewrites": [
     {
+      "source": "/cekilis/:path*",
+      "destination": "https://immense-api.alicaglarkocer.com/cekilis/:path*"
+    },
+    {
       "source": "/calendar/api/:path*",
       "destination": "http://167.235.158.118/ajanda/api/:path*"
     }
   ],
   "redirects": [
+    {
+      "source": "/cekilis",
+      "destination": "/cekilis/",
+      "permanent": false
+    },
     {
       "source": "/ack-techs/",
       "destination": "https://ack-techs.com/",
