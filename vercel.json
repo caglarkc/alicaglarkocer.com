@@ -12,6 +12,10 @@
   ],
   "rewrites": [
     {
+      "source": "/cekilis/",
+      "destination": "https://immense-api.alicaglarkocer.com/cekilis/"
+    },
+    {
       "source": "/cekilis/:path*",
       "destination": "https://immense-api.alicaglarkocer.com/cekilis/:path*"
     },
