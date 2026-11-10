@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://alicaglarkocer.com/sitemap.xml
+Sitemap: https://www.alicaglarkocer.com/sitemap.xml
