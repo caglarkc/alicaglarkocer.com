@@ -26,6 +26,21 @@
   ],
   "redirects": [
     {
+      "source": "/projects/sentinel/",
+      "destination": "/projects/cluesight/",
+      "permanent": true
+    },
+    {
+      "source": "/projects/sentinel",
+      "destination": "/projects/cluesight/",
+      "permanent": true
+    },
+    {
+      "source": "/assets/projects/sentinel/sentinel-:filename",
+      "destination": "/assets/projects/cluesight/cluesight-:filename",
+      "permanent": true
+    },
+    {
       "source": "/cekilis",
       "destination": "/cekilis/",
       "permanent": false
