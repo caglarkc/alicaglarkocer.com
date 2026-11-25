@@ -12,6 +12,18 @@
   ],
   "rewrites": [
     {
+      "source": "/buketim",
+      "destination": "https://buket-dogum-gunu.vercel.app/"
+    },
+    {
+      "source": "/buketim/",
+      "destination": "https://buket-dogum-gunu.vercel.app/"
+    },
+    {
+      "source": "/buketim/:path*",
+      "destination": "https://buket-dogum-gunu.vercel.app/:path*"
+    },
+    {
       "source": "/cekilis/",
       "destination": "https://immense-api.alicaglarkocer.com/cekilis/"
     },
@@ -25,6 +37,28 @@
     }
   ],
   "redirects": [
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "alicaglarkocer.com"
+        }
+      ],
+      "destination": "https://www.alicaglarkocer.com/",
+      "permanent": true
+    },
+    {
+      "source": "/:path((?!buketim(?:/|$)).+)",
+      "has": [
+        {
+          "type": "host",
+          "value": "alicaglarkocer.com"
+        }
+      ],
+      "destination": "https://www.alicaglarkocer.com/:path",
+      "permanent": true
+    },
     {
       "source": "/projects/sentinel/",
       "destination": "/projects/cluesight/",
